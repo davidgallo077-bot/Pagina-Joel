@@ -1,0 +1,15 @@
+a {
+    display: inline-block;
+    background-color: #ffcc00; /* Color de fondo (ej: amarillo estilo Boca) */
+    color: #000000; /* Color del texto */
+    padding: 10px 20px;
+    margin-top: 15px;
+    border-radius: 5px;
+    text-decoration: none; /* Le quita el subrayado feo */
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+a:hover {
+    background-color: #e6b800; /* Un tono más oscuro al pasar el mouse */
+}
