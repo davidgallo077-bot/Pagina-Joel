@@ -1,7 +1,97 @@
-<div align="center">
-  <h1>¡MOMO ARRUINO EL FUTBOL!!!!</h1>
-  <p>TODO CULPA DE KICILLOF.</p>
-  
-  <!-- Imagen con tamaño ajustado (por ejemplo, 400 píxeles de ancho) -->
-  <img src="momoMEME.jfif" alt="Este es el culpable...." width="400" />
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LPB Music</title>
+    <!-- 1. Cargar Alpine.js desde un CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        body { background-color: #121212; color: #ffffff; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        .app { display: flex; flex-direction: column; height: 100%; }
+        .header { padding: 20px; background: #000; display: flex; justify-content: center; }
+        .header input { width: 100%; max-width: 400px; padding: 10px 15px; border-radius: 20px; border: none; background: #242424; color: white; }
+        .content { flex: 1; padding: 30px; display: flex; justify-content: center; align-items: center; text-align: center; }
+        .card { background: #181818; padding: 30px; border-radius: 12px; max-width: 500px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .player { background: #181818; border-top: 1px solid #282828; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        button { background: #1db954; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #1ed760; }
+    </style>
+</head>
+<body>
+
+    <!-- 2. Inicializamos el estado global de Alpine con x-data -->
+    <div class="app" x-data="reproductorLPB()">
+
+        <!-- Barra de Búsqueda -->
+        <header class="header">
+            <input type="text" x-model="busqueda" placeholder="Busca una canción (ej: Queen, Michael)..." @input="buscar">
+        </header>
+
+        <!-- Contenido Central: Reseña e Info del Artista -->
+        <main class="content">
+            <div class="card">
+                <h2 x-text="cancionActual.titulo"></h2>
+                <h3 x-text="'Artista: ' + cancionActual.artista"></h3>
+                <p><strong>Reseña:</strong> <span x-text="cancionActual.reseña"></span></p>
+                <button @click="reproducir(cancionActual)">Reproducir Canción</button>
+            </div>
+        </main>
+
+        <!-- Barra Reproductor Inferior -->
+        <footer class="player">
+            <div>
+                <strong x-text="cancionActual.titulo"></strong> - <span x-text="cancionActual.artista"></span>
+            </div>
+            <!-- Etiqueta audio estándar de HTML controlada por Alpine -->
+            <audio x-ref="audioPlayer" controls></audio>
+        </footer>
+
+    </div>
+
+    <!-- 3. Lógica de los datos y funciones con Alpine -->
+    <script>
+        function reproductorLPB() {
+            return {
+                busqueda: '',
+                listaCanciones: [
+                    {
+                        titulo: "Bohemian Rhapsody",
+                        artista: "Queen",
+                        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+                        reseña: "Una obra maestra del rock que combina ópera y balada de una manera única."
+                    },
+                    {
+                        titulo: "Billie Jean",
+                        artista: "Michael Jackson",
+                        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+                        reseña: "El icónico tema pop con una línea de bajo legendaria."
+                    }
+                ],
+                cancionActual: {
+                    titulo: "Selecciona una canción",
+                    artista: "Desconocido",
+                    audio: "",
+                    reseña: "Usa el buscador superior para encontrar música y ver su reseña."
+                },
+                buscar() {
+                    if (this.busqueda.trim() === '') return;
+                    const encontrada = this.listaCanciones.find(c => 
+                        c.titulo.toLowerCase().includes(this.busqueda.toLowerCase()) || 
+                        c.artista.toLowerCase().includes(this.busqueda.toLowerCase())
+                    );
+                    if (encontrada) {
+                        this.cancionActual = encontrada;
+                    }
+                },
+                reproducir(cancion) {
+                    if (!cancion.audio) return;
+                    const player = this.$refs.audioPlayer;
+                    player.src = cancion.audio;
+                    player.play();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
