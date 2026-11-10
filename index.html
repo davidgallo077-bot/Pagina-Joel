@@ -1,97 +1,967 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LPB Music</title>
-    <!-- 1. Cargar Alpine.js desde un CDN -->
+    <meta name="theme-color" content="#121212">
+    <title>LPB Music 🧡</title>
+
+    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        body { background-color: #121212; color: #ffffff; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        .app { display: flex; flex-direction: column; height: 100%; }
-        .header { padding: 20px; background: #000; display: flex; justify-content: center; }
-        .header input { width: 100%; max-width: 400px; padding: 10px 15px; border-radius: 20px; border: none; background: #242424; color: white; }
-        .content { flex: 1; padding: 30px; display: flex; justify-content: center; align-items: center; text-align: center; }
-        .card { background: #181818; padding: 30px; border-radius: 12px; max-width: 500px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .player { background: #181818; border-top: 1px solid #282828; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
-        button { background: #1db954; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        button:hover { background: #1ed760; }
+        :root {
+            --naranja: #ff7900;
+            --naranja-hover: #ff941f;
+            --dorado: #ffb347;
+            --fondo: #101010;
+            --panel: #191919;
+            --panel2: #222222;
+            --blanco: #ffffff;
+            --gris: #aaaaaa;
+            --borde: #303030;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding-bottom: 115px;
+            background:
+                radial-gradient(ellipse at top, #30200f 0%, #101010 48%);
+            color: var(--blanco);
+            font-family: Arial, sans-serif;
+        }
+
+        button, input, textarea {
+            font: inherit;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--naranja), var(--dorado));
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: .2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        input, textarea {
+            width: 100%;
+            background: #242424;
+            border: 1px solid #383838;
+            border-radius: 12px;
+            padding: 13px;
+            color: white;
+            outline: none;
+            margin: 6px 0 14px;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--naranja);
+            box-shadow: 0 0 0 2px #ff790025;
+        }
+
+        .app {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 18px 0 25px;
+            border-bottom: 1px solid var(--borde);
+        }
+
+        .logo {
+            font-size: 27px;
+            font-weight: 900;
+            color: var(--naranja);
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: white;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 200px;
+            max-width: 420px;
+        }
+
+        .search input {
+            margin: 0;
+            border-radius: 30px;
+        }
+
+        .section {
+            margin-top: 28px;
+        }
+
+        .section h2 {
+            color: var(--dorado);
+        }
+
+        .card {
+            background: linear-gradient(145deg, #202020, #151515);
+            border: 1px solid var(--borde);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 25px #0005;
+        }
+
+        .song-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+            gap: 18px;
+        }
+
+        .song-card {
+            background: var(--panel);
+            padding: 13px;
+            border-radius: 15px;
+            border: 1px solid var(--borde);
+            cursor: pointer;
+            transition: .2s;
+            min-width: 0;
+        }
+
+        .song-card:hover {
+            border-color: var(--naranja);
+            transform: translateY(-4px);
+            box-shadow: 0 5px 20px #ff790022;
+        }
+
+        .song-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #292929;
+        }
+
+        .song-card h3 {
+            margin: 12px 0 5px;
+            font-size: 15px;
+        }
+
+        .song-card p {
+            margin: 0;
+            color: var(--gris);
+            font-size: 13px;
+        }
+
+        .player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 20;
+            background: #171717;
+            border-top: 2px solid var(--naranja);
+            padding: 12px 20px;
+            box-shadow: 0 -5px 25px #0009;
+        }
+
+        .player-inner {
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .player-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .player-info strong {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .player-info small {
+            color: var(--gris);
+        }
+
+        audio {
+            width: 100%;
+            max-width: 420px;
+            height: 40px;
+            accent-color: var(--naranja);
+        }
+
+        .full-player {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: radial-gradient(circle at top, #462609, #101010 65%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .album-cover {
+            width: min(70vw, 320px);
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 0 45px #ff790044;
+        }
+
+        .close-player {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .message {
+            color: var(--dorado);
+            padding: 10px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .empty {
+            color: var(--gris);
+            padding: 20px 0;
+        }
+
+        label {
+            color: var(--dorado);
+            font-size: 14px;
+        }
+
+        @media(max-width: 600px) {
+            .app {
+                padding: 13px;
+            }
+
+            .header {
+                align-items: stretch;
+            }
+
+            .search {
+                max-width: none;
+            }
+
+            .player-inner {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .player-info {
+                width: 100%;
+            }
+
+            .player audio {
+                max-width: 100%;
+            }
+
+            .song-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
     </style>
 </head>
+
 <body>
 
-    <!-- 2. Inicializamos el estado global de Alpine con x-data -->
-    <div class="app" x-data="reproductorLPB()">
+<div class="app" x-data="reproductorLPB()" x-init="iniciar()">
 
-        <!-- Barra de Búsqueda -->
-        <header class="header">
-            <input type="text" x-model="busqueda" placeholder="Busca una canción (ej: Queen, Michael)..." @input="buscar">
-        </header>
+    <!-- ENCABEZADO -->
+    <header class="header">
 
-        <!-- Contenido Central: Reseña e Info del Artista -->
-        <main class="content">
-            <div class="card">
-                <h2 x-text="cancionActual.titulo"></h2>
-                <h3 x-text="'Artista: ' + cancionActual.artista"></h3>
-                <p><strong>Reseña:</strong> <span x-text="cancionActual.reseña"></span></p>
-                <button @click="reproducir(cancionActual)">Reproducir Canción</button>
-            </div>
-        </main>
+        <div class="logo">
+            LPB <span>MUSIC</span> 🧡
+        </div>
 
-        <!-- Barra Reproductor Inferior -->
-        <footer class="player">
-            <div>
-                <strong x-text="cancionActual.titulo"></strong> - <span x-text="cancionActual.artista"></span>
-            </div>
-            <!-- Etiqueta audio estándar de HTML controlada por Alpine -->
-            <audio x-ref="audioPlayer" controls></audio>
-        </footer>
+        <div class="search">
+            <input
+                type="search"
+                x-model="busqueda"
+                placeholder="🔎 Buscar canciones o artistas..."
+            >
+        </div>
+
+        <div>
+            <template x-if="usuario">
+                <button @click="cerrarSesion()">
+                    Cerrar sesión
+                </button>
+            </template>
+
+            <template x-if="!usuario">
+                <button @click="mostrarLogin = !mostrarLogin">
+                    Iniciar sesión
+                </button>
+            </template>
+        </div>
+
+    </header>
+
+    <!-- MENSAJES -->
+    <div class="message" x-show="mensaje" x-text="mensaje"></div>
+
+    <!-- INICIO DE SESIÓN -->
+    <section class="card section" x-show="mostrarLogin" x-transition>
+
+        <h2>🔐 Acceso a LPB Music</h2>
+
+        <form @submit.prevent="iniciarSesion(email, password)">
+
+            <label>Correo electrónico</label>
+            <input type="email" x-model="email" required>
+
+            <label>Contraseña</label>
+            <input type="password" x-model="password" required>
+
+            <button type="submit">Entrar</button>
+
+            <button type="button"
+                    @click="mostrarLogin = false">
+                Cancelar
+            </button>
+
+        </form>
+    </section>
+
+    <!-- PRESENTACIÓN -->
+    <section class="section">
+        <div class="card">
+            <h1 style="color:#ff7900">
+                Bienvenido a LPB Music 🧡
+            </h1>
+
+            <p style="color:#aaa">
+                Tu música, tus artistas y tus canciones favoritas
+                en un solo lugar.
+            </p>
+        </div>
+    </section>
+
+    <!-- CANCIÓN DESTACADA -->
+    <section class="section">
+
+        <h2>🎧 Reproduciendo ahora</h2>
+
+        <div class="card">
+
+            <img
+                class="album-cover"
+                style="width:130px"
+                :src="cancionActual.portada || portadaDefault"
+                alt="Portada"
+            >
+
+            <h2 x-text="cancionActual.titulo"></h2>
+
+            <h3 x-text="cancionActual.artista"></h3>
+
+            <p x-text="cancionActual.reseña"></p>
+
+            <button
+                @click="reproducir(cancionActual)"
+                :disabled="!cancionActual.audio"
+            >
+                ▶ Reproducir
+            </button>
+
+            <button
+                @click="reproductorAbierto = true"
+            >
+                ⛶ Pantalla completa
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- BIBLIOTECA -->
+    <section class="section">
+
+        <h2>🔥 Biblioteca musical</h2>
+
+        <div class="song-grid">
+
+            <template x-for="cancion in cancionesFiltradas()"
+                      :key="cancion.id || cancion.titulo">
+
+                <article
+                    class="song-card"
+                    @click="reproducir(cancion)"
+                >
+
+                    <img
+                        :src="cancion.portada || portadaDefault"
+                        alt="Portada de canción"
+                    >
+
+                    <h3 x-text="cancion.titulo"></h3>
+
+                    <p x-text="cancion.artista"></p>
+
+                </article>
+
+            </template>
+
+        </div>
+
+        <p class="empty"
+           x-show="cancionesFiltradas().length === 0">
+            No se encontraron canciones.
+        </p>
+
+    </section>
+
+    <!-- SUBIR CANCIONES -->
+    <section class="section" x-show="usuario">
+
+        <div class="card">
+
+            <h2>📤 Publicar una canción</h2>
+
+            <p style="color:#aaa">
+                Comparte tu música con la comunidad LPB Music.
+            </p>
+
+            <form @submit.prevent="subirCancionNube()">
+
+                <label>Título de la canción</label>
+                <input
+                    type="text"
+                    x-model="nuevoTitulo"
+                    placeholder="Nombre de la canción"
+                    required
+                >
+
+                <label>Nombre del artista</label>
+                <input
+                    type="text"
+                    x-model="nuevoArtista"
+                    placeholder="Nombre del artista"
+                    required
+                >
+
+                <label>Descripción o reseña</label>
+                <textarea
+                    x-model="nuevaReseña"
+                    placeholder="Escribe una descripción..."
+                    rows="3"
+                ></textarea>
+
+                <label>Archivo de audio</label>
+                <input
+                    type="file"
+                    x-ref="archivoAudio"
+                    accept="audio/*"
+                    required
+                >
+
+                <label>Portada (opcional)</label>
+                <input
+                    type="file"
+                    x-ref="archivoPortada"
+                    accept="image/*"
+                >
+
+                <button type="submit" :disabled="subiendo">
+                    <span x-show="!subiendo">🚀 Publicar canción</span>
+                    <span x-show="subiendo">Subiendo...</span>
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+    <!-- REPRODUCTOR EXPANDIDO -->
+    <div
+        class="full-player"
+        x-show="reproductorAbierto"
+        x-transition
+        style="display:none"
+    >
+
+        <button class="close-player"
+                @click="reproductorAbierto = false">
+            ✕ Cerrar
+        </button>
+
+        <img
+            class="album-cover"
+            :src="cancionActual.portada || portadaDefault"
+            alt="Portada del álbum"
+        >
+
+        <h1 x-text="cancionActual.titulo"></h1>
+
+        <h2 x-text="cancionActual.artista"></h2>
+
+        <p style="color:#aaa">
+            Reproduciendo en LPB Music 🧡
+        </p>
+
+        <button @click="reproductorAbierto = false">
+            Volver a la biblioteca
+        </button>
 
     </div>
 
-    <!-- 3. Lógica de los datos y funciones con Alpine -->
-    <script>
-        function reproductorLPB() {
-            return {
-                busqueda: '',
-                listaCanciones: [
-                    {
-                        titulo: "Bohemian Rhapsody",
-                        artista: "Queen",
-                        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-                        reseña: "Una obra maestra del rock que combina ópera y balada de una manera única."
-                    },
-                    {
-                        titulo: "Billie Jean",
-                        artista: "Michael Jackson",
-                        audio: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-                        reseña: "El icónico tema pop con una línea de bajo legendaria."
-                    }
-                ],
-                cancionActual: {
-                    titulo: "Selecciona una canción",
-                    artista: "Desconocido",
-                    audio: "",
-                    reseña: "Usa el buscador superior para encontrar música y ver su reseña."
-                },
-                buscar() {
-                    if (this.busqueda.trim() === '') return;
-                    const encontrada = this.listaCanciones.find(c => 
-                        c.titulo.toLowerCase().includes(this.busqueda.toLowerCase()) || 
-                        c.artista.toLowerCase().includes(this.busqueda.toLowerCase())
-                    );
-                    if (encontrada) {
-                        this.cancionActual = encontrada;
-                    }
-                },
-                reproducir(cancion) {
-                    if (!cancion.audio) return;
-                    const player = this.$refs.audioPlayer;
-                    player.src = cancion.audio;
-                    player.play();
-                }
+    <!-- REPRODUCTOR INFERIOR -->
+    <footer class="player">
+
+        <div class="player-inner">
+
+            <div class="player-info">
+
+                <strong x-text="cancionActual.titulo"></strong>
+
+                <small x-text="cancionActual.artista"></small>
+
+            </div>
+
+            <audio
+                x-ref="audioPlayer"
+                controls
+                preload="none"
+                @ended="reproductorAbierto = false"
+            ></audio>
+
+        </div>
+        
+<script>
+const sb = window.supabase.createClient(
+    "wgemanyhzanuywidircm",
+    "sb_publishable_1zW1-B1bqE35cZ4eWND3tA_xKj0mJb-"
+);
+
+function reproductorLPB() {
+
+    return {
+
+        // ESTADO GENERAL
+
+        busqueda: '',
+        listaCanciones: [],
+        usuario: null,
+        mensaje: '',
+        email: '',
+        password: '',
+
+        mostrarLogin: false,
+        reproductorAbierto: false,
+        subiendo: false,
+
+        nuevoTitulo: '',
+        nuevoArtista: '',
+        nuevaReseña: '',
+
+        portadaDefault:
+            'https://placehold.co/500x500/242424/ff7900?text=LPB+MUSIC',
+
+        // CANCIÓN ACTUAL
+
+        cancionActual: {
+            id: null,
+            titulo: 'Bienvenido a LPB Music',
+            artista: 'Selecciona una canción',
+            reseña: 'Tu música comienza aquí.',
+            audio: '',
+            portada: null
+        },
+
+        // INICIAR APLICACIÓN
+
+        async iniciar() {
+
+            const { data } = await sb.auth.getSession();
+
+            this.usuario = data.session?.user || null;
+
+            await this.cargarCanciones();
+
+            sb.auth.onAuthStateChange((event, session) => {
+
+                this.usuario = session?.user || null;
+
+            });
+
+        },
+
+        // FILTRAR CANCIONES
+
+        cancionesFiltradas() {
+
+            const texto = this.busqueda.toLowerCase().trim();
+
+            if (!texto) {
+                return this.listaCanciones;
             }
+
+            return this.listaCanciones.filter(cancion =>
+
+                cancion.titulo.toLowerCase().includes(texto) ||
+                cancion.artista.toLowerCase().includes(texto)
+
+            );
+
+        },
+
+        // INICIAR SESIÓN
+
+        async iniciarSesion(email, password) {
+
+            const { data, error } = await sb.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (error) {
+
+                this.mensaje = 'Error al iniciar sesión: ' + error.message;
+
+                return;
+            }
+
+            this.usuario = data.user;
+
+            this.mostrarLogin = false;
+
+            this.password = '';
+
+            this.mensaje = '¡Bienvenido a LPB Music! 🧡';
+
+            await this.cargarCanciones();
+
+        },
+
+        // CERRAR SESIÓN
+
+        async cerrarSesion() {
+
+            const { error } = await sb.auth.signOut();
+
+            if (error) {
+
+                this.mensaje = error.message;
+
+                return;
+            }
+
+            this.usuario = null;
+
+            this.mensaje = 'Sesión cerrada correctamente.';
+
+        },
+
+        // CARGAR CANCIONES DE SUPABASE
+
+        async cargarCanciones() {
+
+            const { data, error } = await sb
+                .from('songs')
+                .select('*')
+                .eq('status', 'published')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+
+                this.mensaje = 'Error al cargar canciones: ' + error.message;
+
+                return;
+            }
+
+            this.listaCanciones = data.map(song => {
+
+                const { data: audio } = sb.storage
+                    .from('music')
+                    .getPublicUrl(song.audio_path);
+
+                let portada = null;
+
+                if (song.cover_path) {
+
+                    portada = sb.storage
+                        .from('music')
+                        .getPublicUrl(song.cover_path).data.publicUrl;
+
+                }
+
+                return {
+
+                    id: song.id,
+                    titulo: song.title,
+                    artista: song.artist,
+                    reseña: song.description || '',
+                    audio: audio.publicUrl,
+                    portada: portada
+
+                };
+
+            });
+
+            // Mantener la canción seleccionada si sigue publicada
+
+            if (this.cancionActual.id) {
+
+                const actualizada = this.listaCanciones.find(
+                    song => song.id === this.cancionActual.id
+                );
+
+                if (actualizada) {
+                    this.cancionActual = actualizada;
+                }
+
+            }
+
+        },
+
+        // REPRODUCIR CANCIÓN
+
+        async reproducir(cancion) {
+
+            if (!cancion || !cancion.audio) {
+
+                this.mensaje = 'Esta canción no tiene audio disponible.';
+
+                return;
+            }
+
+            this.cancionActual = cancion;
+
+            const player = this.$refs.audioPlayer;
+
+            if (!player) return;
+
+            player.src = cancion.audio;
+
+            this.mensaje = '';
+
+            try {
+
+                await player.play();
+
+            } catch (error) {
+
+                this.mensaje = 'Pulsa reproducir en el reproductor para escuchar la canción.';
+
+                console.log(error);
+
+            }
+
+        },
+
+        
+        // SUBIR CANCIÓN A SUPABASE
+
+        async subirCancionNube() {
+
+            if (!this.usuario) {
+
+                this.mensaje = 'Primero debes iniciar sesión.';
+
+                return;
+            }
+
+            const archivo = this.$refs.archivoAudio.files[0];
+
+            const portadaArchivo = this.$refs.archivoPortada.files[0];
+
+            if (!archivo || !archivo.type.startsWith('audio/')) {
+
+                this.mensaje = 'Selecciona un archivo de audio válido.';
+
+                return;
+            }
+
+            if (!this.nuevoTitulo.trim() || !this.nuevoArtista.trim()) {
+
+                this.mensaje = 'Completa el título y el artista.';
+
+                return;
+            }
+
+            this.subiendo = true;
+
+            this.mensaje = 'Subiendo canción...';
+
+            let rutaAudio = null;
+            let rutaPortada = null;
+
+            try {
+
+                const carpeta = this.usuario.id;
+
+                const identificador = crypto.randomUUID();
+
+                const nombreAudio = archivo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+
+                rutaAudio = `${carpeta}/${identificador}-${nombreAudio}`;
+
+                // SUBIR AUDIO
+
+                const { error: audioError } = await sb.storage
+                    .from('music')
+                    .upload(rutaAudio, archivo, {
+                        contentType: archivo.type,
+                        upsert: false
+                    });
+
+                if (audioError) {
+                    throw audioError;
+                }
+
+                // SUBIR PORTADA SI EXISTE
+
+                if (portadaArchivo) {
+
+                    if (!portadaArchivo.type.startsWith('image/')) {
+
+                        throw new Error('La portada debe ser una imagen válida.');
+
+                    }
+
+                    const nombrePortada = portadaArchivo.name.replace(
+                        /[^a-zA-Z0-9._-]/g,
+                        '_'
+                    );
+
+                    rutaPortada =
+                        `${carpeta}/${identificador}-${nombrePortada}`;
+
+                    const { error: portadaError } = await sb.storage
+                        .from('music')
+                        .upload(rutaPortada, portadaArchivo, {
+                            contentType: portadaArchivo.type,
+                            upsert: false
+                        });
+
+                    if (portadaError) {
+                        throw portadaError;
+                    }
+
+                }
+
+                // GUARDAR INFORMACIÓN EN LA BASE DE DATOS
+
+                const { error: insertError } = await sb
+                    .from('songs')
+                    .insert({
+
+                        user_id: this.usuario.id,
+
+                        title: this.nuevoTitulo.trim(),
+
+                        artist: this.nuevoArtista.trim(),
+
+                        description: this.nuevaReseña.trim(),
+
+                        audio_path: rutaAudio,
+
+                        cover_path: rutaPortada,
+
+                        status: 'published'
+
+                    });
+
+                if (insertError) {
+                    throw insertError;
+                }
+
+                // LIMPIAR FORMULARIO
+
+                this.nuevoTitulo = '';
+                this.nuevoArtista = '';
+                this.nuevaReseña = '';
+
+                this.$refs.archivoAudio.value = '';
+                this.$refs.archivoPortada.value = '';
+
+                // ACTUALIZAR BIBLIOTECA
+
+                await this.cargarCanciones();
+
+                this.mensaje = '¡Canción publicada correctamente! 🧡';
+
+            } catch (error) {
+
+                console.error('Error al publicar:', error);
+
+                this.mensaje = 'No se pudo publicar: ' + error.message;
+
+                // LIMPIAR ARCHIVOS SI FALLÓ EL REGISTRO
+
+                if (rutaAudio) {
+
+                    await sb.storage
+                        .from('music')
+                        .remove([rutaAudio]);
+
+                }
+
+                if (rutaPortada) {
+
+                    await sb.storage
+                        .from('music')
+                        .remove([rutaPortada]);
+
+                }
+
+            } finally {
+
+                this.subiendo = false;
+
+            }
+
         }
-    </script>
+
+    };
+
+}
+</script>
+
+</body>
+</html>
+
+
+    </footer>
+</div>
 </body>
 </html>
