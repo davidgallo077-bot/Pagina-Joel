@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0d0d0f">
-    <title>LPB Music 🧡 - Proyect Edition</title>
+    <title>LPB Music 🧡 - Comunidad Colaborativa</title>
 
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
@@ -15,7 +17,7 @@
             --naranja-glow: rgba(255, 122, 0, 0.35);
             --dorado: #ffb347;
             --fondo: #0d0d0f;
-            --panel: rgba(20, 20, 25, 0.85);
+            --panel: rgba(22, 22, 28, 0.85);
             --blanco: #ffffff;
             --gris: #9494a0;
             --borde: rgba(255, 255, 255, 0.08);
@@ -27,37 +29,79 @@
         body {
             margin: 0;
             min-height: 100vh;
-            padding-bottom: 160px;
+            padding-bottom: 165px;
             background: var(--fondo);
             background-image: 
                 radial-gradient(circle at 50% 0%, #291205 0%, transparent 50%),
-                radial-gradient(circle at 10% 90%, #15091a 0%, transparent 40%);
+                radial-gradient(circle at 85% 85%, #160c1f 0%, transparent 45%);
             color: var(--blanco);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
-        button, input { font: inherit; }
+        button, input, select { font: inherit; }
 
-        /* HEADER ÚNICO Y CENTRADO */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--naranja), var(--dorado));
+            color: #fff;
+            border: none;
+            padding: 11px 22px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px var(--naranja-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.12);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        input, select {
+            width: 100%;
+            background: rgba(28, 28, 36, 0.95);
+            border: 1px solid var(--borde);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            outline: none;
+            margin-top: 6px;
+            margin-bottom: 14px;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--naranja);
+            box-shadow: 0 0 15px var(--naranja-glow);
+        }
+
+        /* HEADER Y BUSCADOR CENTRADO ARRIBA */
         .header {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
-            padding: 30px 20px 20px;
-            max-width: 800px;
+            gap: 16px;
+            padding: 28px 20px 15px;
+            max-width: 850px;
             margin: 0 auto;
             text-align: center;
         }
 
-        .logo-container {
+        .top-bar {
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
         .logo {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 900;
             letter-spacing: -1px;
             background: linear-gradient(135deg, var(--naranja), var(--dorado));
@@ -65,122 +109,149 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .badge-pro {
-            background: rgba(255, 122, 0, 0.15);
-            border: 1px solid var(--naranja);
-            color: var(--dorado);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        /* BUSCADOR ARRIBA EN EL MEDIO Y DESTACADO */
         .search-wrapper {
             width: 100%;
-            max-width: 550px;
+            max-width: 540px;
             position: relative;
         }
 
         .search-wrapper input {
-            width: 100%;
-            background: rgba(25, 25, 32, 0.9);
-            border: 1px solid var(--borde);
+            margin: 0;
             border-radius: 40px;
-            padding: 16px 24px;
-            padding-left: 50px;
-            color: white;
-            font-size: 15px;
-            outline: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .search-wrapper input:focus {
-            border-color: var(--naranja);
-            box-shadow: 0 0 25px var(--naranja-glow);
-            background: rgba(30, 30, 40, 0.95);
+            padding-left: 46px;
+            background: rgba(25, 25, 32, 0.95);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
 
         .search-icon {
             position: absolute;
-            left: 20px;
+            left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 18px;
             color: var(--gris);
-            pointer-events: none;
+        }
+
+        /* PÍLDORAS DE GÉNEROS (ESTILO SOUNDCLOUD / APPLE MUSIC) */
+        .genre-pills {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 10px 5px;
+            max-width: 100%;
+            scrollbar-width: none;
+        }
+        .genre-pills::-webkit-scrollbar { display: none; }
+
+        .pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--borde);
+            color: var(--gris);
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .pill:hover {
+            background: rgba(255, 122, 0, 0.15);
+            color: var(--blanco);
+            border-color: var(--naranja);
+        }
+
+        .pill.active {
+            background: linear-gradient(135deg, var(--naranja), var(--dorado));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px var(--naranja-glow);
         }
 
         .app {
-            max-width: 1100px;
+            max-width: 1120px;
             margin: auto;
             padding: 10px 25px;
         }
 
-        .section { margin-top: 25px; }
-
-        .section h2 {
-            color: var(--blanco);
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .card {
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--borde);
+            border-radius: 22px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.5);
         }
 
-        /* TARJETAS ESTILO MODERNO (NO COPIA DE SPOTIFY) */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* REJILLA DE CANCIONES */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 18px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
         .song-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+            gap: 20px;
         }
 
         .song-card {
             background: var(--panel);
-            backdrop-filter: blur(20px);
             border: 1px solid var(--borde);
-            padding: 16px;
-            border-radius: 24px;
+            padding: 14px;
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
-        }
-
-        .song-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, transparent 50%, rgba(255,122,0,0.15));
-            opacity: 0;
-            transition: opacity 0.3s ease;
         }
 
         .song-card:hover {
             border-color: var(--borde-hover);
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px var(--naranja-glow);
-        }
-
-        .song-card:hover::before {
-            opacity: 1;
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
         }
 
         .song-card img {
             width: 100%;
             aspect-ratio: 1;
             object-fit: cover;
-            border-radius: 18px;
+            border-radius: 14px;
             background: #181820;
-            margin-bottom: 14px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            margin-bottom: 12px;
+        }
+
+        .genre-tag {
+            position: absolute;
+            top: 22px;
+            right: 22px;
+            background: rgba(13, 13, 15, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 122, 0, 0.4);
+            color: var(--dorado);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 12px;
+            text-transform: uppercase;
         }
 
         .song-card h3 {
-            margin: 0 0 6px;
+            margin: 0 0 4px;
             font-size: 15px;
             font-weight: 700;
             white-space: nowrap;
@@ -197,81 +268,73 @@
             text-overflow: ellipsis;
         }
 
-        /* REPRODUCTOR INFERIOR FLOTANTE CON EFECTO VIDRIO */
+        /* REPRODUCTOR INFERIOR */
         .player {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
             z-index: 100;
-            background: rgba(13, 13, 15, 0.9);
+            background: rgba(13, 13, 15, 0.95);
             backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
             border-top: 1px solid var(--borde);
-            padding: 16px 30px;
+            padding: 15px 30px;
             box-shadow: 0 -15px 40px rgba(0,0,0,0.8);
         }
 
         .player-inner {
-            max-width: 1100px;
+            max-width: 1120px;
             margin: auto;
             display: grid;
-            grid-template-columns: 300px 1fr 120px;
+            grid-template-columns: 280px 1fr 120px;
             align-items: center;
-            gap: 25px;
+            gap: 20px;
         }
 
         .player-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 14px;
             min-width: 0;
         }
 
         .player-left img {
-            width: 58px;
-            height: 58px;
-            border-radius: 14px;
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
             object-fit: cover;
-            background: #181820;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-
-        .player-info {
-            min-width: 0;
         }
 
         .player-info strong {
             display: block;
             font-size: 14px;
             font-weight: 700;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
         }
 
         .player-info small {
             color: var(--gris);
             font-size: 12px;
             display: block;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
-            margin-top: 3px;
         }
 
         .player-center {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             width: 100%;
         }
 
         .player-controls-btns {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 16px;
         }
 
         .control-btn {
@@ -280,51 +343,37 @@
             color: var(--blanco);
             font-size: 16px;
             cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            transition: all 0.2s;
+            padding: 6px;
         }
 
-        .control-btn:hover {
-            color: var(--naranja);
-            transform: scale(1.15);
-            background: rgba(255,255,255,0.05);
-        }
+        .control-btn:hover { color: var(--naranja); }
 
         .play-pause-btn {
             background: linear-gradient(135deg, var(--naranja), var(--dorado));
             color: #fff;
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            box-shadow: 0 4px 15px var(--naranja-glow);
-        }
-
-        .play-pause-btn:hover {
-            filter: brightness(1.15);
-            transform: scale(1.08);
-            color: #fff;
-            background: linear-gradient(135deg, var(--naranja), var(--dorado));
+            box-shadow: 0 4px 12px var(--naranja-glow);
         }
 
         .progress-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            max-width: 500px;
+            max-width: 460px;
             font-size: 11px;
             color: var(--gris);
         }
 
         .progress-bar {
             flex: 1;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
+            height: 5px;
+            background: rgba(255, 255, 255, 0.12);
             border-radius: 10px;
             cursor: pointer;
             position: relative;
@@ -335,83 +384,142 @@
             height: 100%;
             background: linear-gradient(90deg, var(--naranja), var(--dorado));
             width: 0%;
-            border-radius: 10px;
         }
 
         .message {
-            background: rgba(255, 122, 0, 0.12);
-            border: 1px solid rgba(255, 122, 0, 0.3);
+            background: rgba(255, 122, 0, 0.15);
+            border: 1px solid rgba(255, 122, 0, 0.4);
             color: var(--dorado);
-            padding: 12px 18px;
-            border-radius: 14px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 600;
+            padding: 10px 18px;
+            border-radius: 12px;
+            margin: 10px auto 20px;
+            font-size: 13px;
             text-align: center;
             max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .empty {
-            color: var(--gris);
-            text-align: center;
-            padding: 40px 0;
-            font-size: 15px;
         }
 
         @media(max-width: 768px) {
-            .player-inner { grid-template-columns: 1fr; gap: 12px; }
+            .form-grid { grid-template-columns: 1fr; gap: 0; }
+            .player-inner { grid-template-columns: 1fr; }
             .player-center { order: -1; }
-            .player-right { display: none; }
-            body { padding-bottom: 180px; }
+            body { padding-bottom: 185px; }
         }
     </style>
 </head>
 
 <body>
 
-<div x-data="reproductorLicenciado()" x-init="iniciar()">
+<div x-data="reproductorComunidad()" x-init="iniciar()">
 
-    <!-- ENCABEZADO CON BUSCADOR ARRIBA EN EL MEDIO -->
+    <!-- HEADER CON BUSCADOR CENTRADO Y BOTÓN DE APORTAR -->
     <header class="header">
-        <div class="logo-container">
-            <span class="logo">LPB MUSIC</span>
-            <span class="badge-pro">PRO</span>
+        <div class="top-bar">
+            <span class="logo">LPB MUSIC 🧡</span>
+            <button class="btn-primary" @click="mostrarFormularioSubida = !mostrarFormularioSubida" style="padding: 8px 18px; font-size: 13px;">
+                <span x-text="mostrarFormularioSubida ? '✕ Cerrar panel' : '+ Aportar Canción'"></span>
+            </button>
         </div>
 
+        <!-- BUSCADOR RÁPIDO -->
         <div class="search-wrapper">
             <span class="search-icon">🔍</span>
             <input
                 type="search"
-                x-model="terminoBusqueda"
-                @input.debounce.400ms="buscarCanciones()"
-                placeholder="Busca más temas (ej: Anuel, Reik, Romeo)..."
+                x-model="busqueda"
+                placeholder="Buscar por canción, artista o género..."
             >
+        </div>
+
+        <!-- FILTROS RÁPIDOS POR GÉNERO -->
+        <div class="genre-pills">
+            <template x-for="gen in generosDisponibles" :key="gen">
+                <button 
+                    class="pill" 
+                    :class="{ 'active': generoSeleccionado === gen }"
+                    @click="generoSeleccionado = gen"
+                    x-text="gen"
+                ></button>
+            </template>
         </div>
     </header>
 
-    <!-- MENSAJES -->
+    <!-- MENSAJES DE ESTADO -->
     <div class="message" x-show="mensaje" x-text="mensaje" x-transition></div>
 
     <div class="app">
-        <section class="section">
-            <h2 x-text="tituloSeccion">🔥 Recomendados para tu Proyecto</h2>
+
+        <!-- FORMULARIO COLABORATIVO PARA SUBIR CANCIONES (PC O CELULAR) -->
+        <section class="card" x-show="mostrarFormularioSubida" x-transition style="display: none;">
+            <h3 style="margin-top:0; color:var(--dorado)">📤 Compartir canción con el grupo</h3>
+            <p style="color: var(--gris); font-size: 13px; margin-top: -8px; margin-bottom: 18px;">
+                Sube el tema desde tu celular o PC y aparecerá automáticamente en la biblioteca de todos.
+            </p>
+
+            <form @submit.prevent="subirCancionCompartida()">
+                <div class="form-grid">
+                    <div>
+                        <label style="font-size: 12px; color:var(--gris)">Nombre de la canción *</label>
+                        <input type="text" x-model="nuevoTitulo" required placeholder="Ej. Noviembre Sin Ti">
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color:var(--gris)">Artista *</label>
+                        <input type="text" x-model="nuevoArtista" required placeholder="Ej. Reik">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div>
+                        <label style="font-size: 12px; color:var(--gris)">Género musical *</label>
+                        <select x-model="nuevoGenero" required>
+                            <option value="Reggaetón">Reggaetón</option>
+                            <option value="R&B / Romántico">R&B / Romántico</option>
+                            <option value="Pop">Pop</option>
+                            <option value="Trap">Trap</option>
+                            <option value="Bachata / Latino">Bachata / Latino</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 12px; color:var(--gris)">Portada (Imagen opcional)</label>
+                        <input type="file" x-ref="archivoPortada" accept="image/*">
+                    </div>
+                </div>
+
+                <label style="font-size: 12px; color:var(--gris)">Archivo de Audio (.mp3, .wav, .m4a) *</label>
+                <input type="file" x-ref="archivoAudio" accept="audio/*" required>
+
+                <button type="submit" class="btn-primary" :disabled="subiendo" style="width: 100%; margin-top: 8px;">
+                    <span x-show="!subiendo">🚀 Publicar para todos</span>
+                    <span x-show="subiendo">Subiendo tema a la nube...</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- BIBLIOTECA COMPARTIDA -->
+        <section>
+            <div class="section-header">
+                <h2>
+                    <span x-text="generoSeleccionado === 'Todos' ? '🔥 Toda la música compartida' : '🎧 Género: ' + generoSeleccionado"></span>
+                </h2>
+                <span style="color: var(--gris); font-size: 13px;" x-text="cancionesFiltradas().length + ' temas'"></span>
+            </div>
 
             <div class="song-grid">
-                <template x-for="cancion in listaCanciones" :key="cancion.id">
+                <template x-for="cancion in cancionesFiltradas()" :key="cancion.id">
                     <article class="song-card" @click="reproducir(cancion)">
-                        <img :src="cancion.portada" alt="Portada">
+                        <span class="genre-tag" x-text="cancion.genero"></span>
+                        <img :src="cancion.portada || 'https://placehold.co/500x500/181820/ff7a00?text=LPB'" alt="Portada">
                         <h3 x-text="cancion.titulo"></h3>
                         <p x-text="cancion.artista"></p>
                     </article>
                 </template>
             </div>
 
-            <p class="empty" x-show="listaCanciones.length === 0">
-                Buscando canciones licenciadas...
+            <p style="text-align:center; color: var(--gris); padding: 40px 0;" x-show="cancionesFiltradas().length === 0">
+                Aún no hay canciones en esta categoría. ¡Sé el primero en subir una arriba!
             </p>
         </section>
+
     </div>
 
     <!-- REPRODUCTOR INFERIOR -->
@@ -421,7 +529,7 @@
                 <img :src="cancionActual.portada || 'https://placehold.co/500x500/181820/ff7a00?text=LPB'" alt="Cover">
                 <div class="player-info">
                     <strong x-text="cancionActual.titulo"></strong>
-                    <small x-text="cancionActual.artista"></small>
+                    <small x-text="cancionActual.artista + (cancionActual.genero ? ' • ' + cancionActual.genero : '')"></small>
                 </div>
             </div>
 
@@ -439,16 +547,16 @@
                     <div class="progress-bar" @click="buscarPosicion($event)">
                         <div class="progress-filled" :style="`width: ${progresoPorcentaje}%`"></div>
                     </div>
-                    <span x-text="duracionTotalFormateada">0:30</span>
+                    <span x-text="duracionTotalFormateada">0:00</span>
                 </div>
             </div>
-            
             <div></div>
         </div>
 
         <audio
             x-ref="audioPlayer"
             @timeupdate="actualizarProgreso()"
+            @loadedmetadata="actualizarDuracionTotal()"
             @ended="reproduciendo = false"
         ></audio>
     </footer>
@@ -456,96 +564,163 @@
 </div>
 
 <script>
-function reproductorLicenciado() {
+const sb = window.supabase.createClient(
+    "https://wgemanyhzanuywidircm.supabase.co",
+    "sb_publishable_1zW1-B1bqE35cZ4eWND3tA_xKj0mJb-"
+);
+
+function reproductorComunidad() {
     return {
-        terminoBusqueda: '',
+        busqueda: '',
+        generoSeleccionado: 'Todos',
+        generosDisponibles: ['Todos', 'Reggaetón', 'R&B / Romántico', 'Pop', 'Trap', 'Bachata / Latino', 'Otros'],
+        
+        mostrarFormularioSubida: false,
         listaCanciones: [],
-        tituloSeccion: '🔥 Éxitos de Reik, Romeo Santos & Anuel AA',
         mensaje: '',
         reproduciendo: false,
-        
+
+        // Campos del formulario colaborativo
+        nuevoTitulo: '',
+        nuevoArtista: '',
+        nuevoGenero: 'Reggaetón',
+        subiendo: false,
+
+        // Estado reproductor
         progresoPorcentaje: 0,
         tiempoActualFormateado: '0:00',
-        duracionTotalFormateada: '0:30',
+        duracionTotalFormateada: '0:00',
 
         cancionActual: {
             titulo: 'Selecciona un tema',
-            artista: 'LPB Music Pro',
+            artista: 'LPB Music Comunidad',
+            genero: '',
             audio: '',
             portada: ''
         },
 
         async iniciar() {
-            // Cargamos por defecto canciones de los artistas pedidos para la presentación del proyecto
-            await this.cargarTemasIniciales();
+            await this.cargarCanciones();
         },
 
-        async cargarTemasIniciales() {
+        async cargarCanciones() {
             try {
-                // Hacemos una consulta combinada o predefinida para asegurar los artistas exactos
-                const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.deezer.com/search?q=reik romeo santos anuel&limit=15`)}`;
-                const res = await fetch(url);
-                const data = await res.json();
+                const { data, error } = await sb
+                    .from('songs')
+                    .select('*')
+                    .eq('status', 'published')
+                    .order('created_at', { ascending: false });
 
-                if (data && data.data) {
-                    this.listaCanciones = data.data.map(item => ({
-                        id: item.id,
-                        titulo: item.title,
-                        artista: item.artist.name,
-                        audio: item.preview,
-                        portada: item.album.cover_medium || item.album.cover_big
-                    }));
+                if (error) throw error;
+
+                if (data) {
+                    this.listaCanciones = data.map(song => {
+                        const { data: audioUrl } = sb.storage.from('music').getPublicUrl(song.audio_path);
+                        let portadaUrl = null;
+                        if (song.cover_path) {
+                            portadaUrl = sb.storage.from('music').getPublicUrl(song.cover_path).data.publicUrl;
+                        }
+                        return {
+                            id: song.id,
+                            titulo: song.title,
+                            artista: song.artist,
+                            genero: song.genre || 'Otros',
+                            audio: audioUrl.publicUrl,
+                            portada: portadaUrl
+                        };
+                    });
                 }
-            } catch (err) {
-                console.error("Error al cargar temas iniciales:", err);
-                this.mensaje = 'No se pudieron precargar los temas automáticos.';
+            } catch (e) {
+                console.error("Error cargando canciones:", e);
+                this.mensaje = 'Verifica que la tabla "songs" en Supabase tenga permisos de lectura pública.';
             }
         },
 
-        async buscarCanciones() {
-            if (!this.terminoBusqueda.trim()) {
-                this.tituloSeccion = '🔥 Éxitos de Reik, Romeo Santos & Anuel AA';
-                await this.cargarTemasIniciales();
+        cancionesFiltradas() {
+            return this.listaCanciones.filter(c => {
+                // 1. Filtro por género
+                const coincideGenero = this.generoSeleccionado === 'Todos' || c.genero === this.generoSeleccionado;
+                
+                // 2. Filtro por texto en buscador
+                const texto = this.busqueda.toLowerCase().trim();
+                const coincideTexto = !texto || 
+                    c.titulo.toLowerCase().includes(texto) || 
+                    c.artista.toLowerCase().includes(texto) ||
+                    c.genero.toLowerCase().includes(texto);
+
+                return coincideGenero && coincideTexto;
+            });
+        },
+
+        async subirCancionCompartida() {
+            const archivoAudio = this.$refs.archivoAudio.files[0];
+            const archivoPortada = this.$refs.archivoPortada.files[0];
+
+            if (!archivoAudio) {
+                this.mensaje = 'Debes seleccionar un archivo de audio.';
                 return;
             }
-            this.tituloSeccion = `🔍 Resultados para: "${this.terminoBusqueda}"`;
-            
-            try {
-                const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.deezer.com/search?q=${this.terminoBusqueda}&limit=15`)}`;
-                const res = await fetch(url);
-                const data = await res.json();
 
-                if (data && data.data) {
-                    this.listaCanciones = data.data.map(item => ({
-                        id: item.id,
-                        titulo: item.title,
-                        artista: item.artist.name,
-                        audio: item.preview,
-                        portada: item.album.cover_medium || item.album.cover_big
-                    }));
+            this.subiendo = true;
+            this.mensaje = 'Subiendo canción para toda la comunidad...';
+
+            try {
+                const idUnico = crypto.randomUUID();
+                const nombreLimpioAudio = archivoAudio.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                const rutaAudio = `comunidad/${idUnico}-${nombreLimpioAudio}`;
+
+                // Subir archivo MP3 al bucket 'music'
+                const { error: errAudio } = await sb.storage.from('music').upload(rutaAudio, archivoAudio);
+                if (errAudio) throw errAudio;
+
+                // Subir portada si se eligió una
+                let rutaPortada = null;
+                if (archivoPortada) {
+                    const nombreLimpioPortada = archivoPortada.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+                    rutaPortada = `comunidad/${idUnico}-${nombreLimpioPortada}`;
+                    await sb.storage.from('music').upload(rutaPortada, archivoPortada);
                 }
+
+                // Guardar en la tabla 'songs' para que les aparezca a todos
+                const { error: errDb } = await sb.from('songs').insert({
+                    title: this.nuevoTitulo.trim(),
+                    artist: this.nuevoArtista.trim(),
+                    genre: this.nuevoGenero,
+                    audio_path: rutaAudio,
+                    cover_path: rutaPortada,
+                    status: 'published'
+                });
+
+                if (errDb) throw errDb;
+
+                // Limpiar formulario y actualizar pantalla
+                this.nuevoTitulo = '';
+                this.nuevoArtista = '';
+                this.$refs.archivoAudio.value = '';
+                if (this.$refs.archivoPortada) this.$refs.archivoPortada.value = '';
+                this.mostrarFormularioSubida = false;
+                
+                await this.cargarCanciones();
+                this.mensaje = '¡Tema publicado! Ya lo pueden escuchar todos 🧡';
+
             } catch (err) {
-                console.error("Error en búsqueda:", err);
-                this.mensaje = 'Error al buscar en el catálogo.';
+                console.error(err);
+                this.mensaje = 'Error al subir: ' + err.message;
+            } finally {
+                this.subiendo = false;
             }
         },
 
         async reproducir(cancion) {
-            if (!cancion.audio) {
-                this.mensaje = 'Este tema no cuenta con vista previa de audio.';
-                return;
-            }
-
             this.cancionActual = cancion;
             const player = this.$refs.audioPlayer;
             player.src = cancion.audio;
             this.mensaje = '';
-
             try {
                 await player.play();
                 this.reproduciendo = true;
-            } catch (error) {
-                this.mensaje = 'Presiona el botón Play en el reproductor inferior.';
+            } catch (e) {
+                this.mensaje = 'Presiona Play en el reproductor inferior.';
                 this.reproduciendo = false;
             }
         },
@@ -553,7 +728,6 @@ function reproductorLicenciado() {
         togglePlayPause() {
             const player = this.$refs.audioPlayer;
             if (!player.src) return;
-
             if (player.paused) {
                 player.play();
                 this.reproduciendo = true;
@@ -564,26 +738,40 @@ function reproductorLicenciado() {
         },
 
         retroceder() {
-            this.$refs.audioPlayer.currentTime = Math.max(0, this.$refs.audioPlayer.currentTime - 5);
+            const player = this.$refs.audioPlayer;
+            if (player.duration) player.currentTime = Math.max(0, player.currentTime - 10);
         },
 
         adelantar() {
-            this.$refs.audioPlayer.currentTime = Math.min(30, this.$refs.audioPlayer.currentTime + 5);
+            const player = this.$refs.audioPlayer;
+            if (player.duration) player.currentTime = Math.min(player.duration, player.currentTime + 10);
         },
 
         actualizarProgreso() {
             const player = this.$refs.audioPlayer;
             if (!player.duration) return;
             this.progresoPorcentaje = (player.currentTime / player.duration) * 100;
-            this.tiempoActualFormateado = `0:${Math.floor(player.currentTime) < 10 ? '0' : ''}${Math.floor(player.currentTime)}`;
+            this.tiempoActualFormateado = this.formatearSegundos(player.currentTime);
+        },
+
+        actualizarDuracionTotal() {
+            const player = this.$refs.audioPlayer;
+            if (player.duration) {
+                this.duracionTotalFormateada = this.formatearSegundos(player.duration);
+            }
+        },
+
+        formatearSegundos(seg) {
+            const mins = Math.floor(seg / 60);
+            const secs = Math.floor(seg % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         },
 
         buscarPosicion(event) {
             const player = this.$refs.audioPlayer;
             if (!player.duration) return;
             const rect = event.currentTarget.getBoundingClientRect();
-            const porcentaje = (event.clientX - rect.left) / rect.width;
-            player.currentTime = porcentaje * player.duration;
+            player.currentTime = ((event.clientX - rect.left) / rect.width) * player.duration;
         }
     };
 }
