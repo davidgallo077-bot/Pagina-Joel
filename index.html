@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#121212">
-    <title>LPB Music 🧡</title>
+    <title>LPB Music 🧡 - Proyect Edition</title>
 
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Supabase -->
+    <!-- Supabase (Opcional si quieres mantener login o almacenamiento propio) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -18,73 +17,67 @@
             --naranja: #ff7900;
             --naranja-hover: #ff941f;
             --dorado: #ffb347;
-            --fondo: #101010;
-            --panel: #191919;
-            --panel2: #222222;
+            --fondo: #0a0a0a;
+            --panel: rgba(25, 25, 25, 0.75);
             --blanco: #ffffff;
-            --gris: #aaaaaa;
-            --borde: #303030;
+            --gris: #a0a0a0;
+            --borde: rgba(255, 255, 255, 0.08);
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
             min-height: 100vh;
-            padding-bottom: 115px;
-            background:
-                radial-gradient(ellipse at top, #30200f 0%, #101010 48%);
+            padding-bottom: 140px;
+            background: var(--fondo);
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(255, 121, 0, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(255, 179, 71, 0.08) 0%, transparent 40%);
             color: var(--blanco);
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        button, input, textarea {
-            font: inherit;
-        }
+        button, input { font: inherit; }
 
         button {
             background: linear-gradient(135deg, var(--naranja), var(--dorado));
             color: #fff;
             border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
+            padding: 12px 22px;
+            border-radius: 30px;
             cursor: pointer;
-            font-weight: bold;
-            transition: .2s;
+            font-weight: 700;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(255, 121, 0, 0.3);
         }
 
         button:hover {
             transform: translateY(-2px);
-            filter: brightness(1.1);
+            filter: brightness(1.15);
+            box-shadow: 0 6px 20px rgba(255, 121, 0, 0.45);
         }
 
-        button:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-        }
-
-        input, textarea {
+        input {
             width: 100%;
-            background: #242424;
-            border: 1px solid #383838;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid var(--borde);
             border-radius: 12px;
-            padding: 13px;
+            padding: 14px;
             color: white;
             outline: none;
-            margin: 6px 0 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        input:focus, textarea:focus {
+        input:focus {
             border-color: var(--naranja);
-            box-shadow: 0 0 0 2px #ff790025;
+            box-shadow: 0 0 0 3px rgba(255, 121, 0, 0.2);
         }
 
         .app {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: auto;
-            padding: 20px;
+            padding: 25px;
         }
 
         .header {
@@ -92,118 +85,145 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
-            padding: 18px 0 25px;
+            gap: 20px;
+            padding: 15px 0 25px;
             border-bottom: 1px solid var(--borde);
         }
 
         .logo {
-            font-size: 27px;
+            font-size: 26px;
             font-weight: 900;
             color: var(--naranja);
-            letter-spacing: 1px;
+            letter-spacing: -0.5px;
         }
 
-        .logo span {
-            color: white;
-        }
+        .logo span { color: white; }
 
         .search {
             flex: 1;
-            min-width: 200px;
-            max-width: 420px;
+            min-width: 220px;
+            max-width: 450px;
         }
 
         .search input {
-            margin: 0;
             border-radius: 30px;
+            padding-left: 20px;
+            background: rgba(30, 30, 30, 0.6);
         }
 
-        .section {
-            margin-top: 28px;
-        }
+        .section { margin-top: 32px; }
 
         .section h2 {
-            color: var(--dorado);
+            color: var(--blanco);
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            letter-spacing: -0.5px;
         }
 
         .card {
-            background: linear-gradient(145deg, #202020, #151515);
+            background: var(--panel);
+            backdrop-filter: blur(16px);
             border: 1px solid var(--borde);
-            border-radius: 18px;
-            padding: 22px;
-            margin-bottom: 18px;
-            box-shadow: 0 8px 25px #0005;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
         .song-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
         }
 
         .song-card {
-            background: var(--panel);
-            padding: 13px;
-            border-radius: 15px;
+            background: rgba(25, 25, 25, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            border-radius: 16px;
             border: 1px solid var(--borde);
             cursor: pointer;
-            transition: .2s;
-            min-width: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .song-card:hover {
-            border-color: var(--naranja);
-            transform: translateY(-4px);
-            box-shadow: 0 5px 20px #ff790022;
+            border-color: rgba(255, 121, 0, 0.4);
+            transform: translateY(-6px);
+            background: rgba(35, 35, 35, 0.8);
+            box-shadow: 0 12px 30px rgba(255, 121, 0, 0.15);
         }
 
         .song-card img {
             width: 100%;
             aspect-ratio: 1;
             object-fit: cover;
-            border-radius: 10px;
-            background: #292929;
+            border-radius: 12px;
+            background: #202020;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
         .song-card h3 {
-            margin: 12px 0 5px;
+            margin: 0 0 4px;
             font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .song-card p {
             margin: 0;
             color: var(--gris);
             font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
+        /* REPRODUCTOR INFERIOR */
         .player {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            z-index: 20;
-            background: #171717;
-            border-top: 2px solid var(--naranja);
-            padding: 12px 20px;
-            box-shadow: 0 -5px 25px #0009;
+            z-index: 100;
+            background: rgba(18, 18, 18, 0.92);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--borde);
+            padding: 15px 25px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
         }
 
         .player-inner {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: auto;
-            display: flex;
+            display: grid;
+            grid-template-columns: 280px 1fr 100px;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
 
-        .player-info {
-            flex: 1;
+        .player-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
             min-width: 0;
+        }
+
+        .player-left img {
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #222;
         }
 
         .player-info strong {
             display: block;
+            font-size: 14px;
+            font-weight: 700;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -211,757 +231,304 @@
 
         .player-info small {
             color: var(--gris);
+            font-size: 12px;
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
-        audio {
-            width: 100%;
-            max-width: 420px;
-            height: 40px;
-            accent-color: var(--naranja);
-        }
-
-        .full-player {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            background: radial-gradient(circle at top, #462609, #101010 65%);
+        .player-center {
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .player-controls-btns {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .control-btn {
+            background: transparent;
+            border: none;
+            color: var(--blanco);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            box-shadow: none;
+        }
+
+        .control-btn:hover {
+            color: var(--naranja);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .play-pause-btn {
+            background: var(--blanco);
+            color: #000;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 25px;
-            text-align: center;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(255,255,255,0.2);
         }
 
-        .album-cover {
-            width: min(70vw, 320px);
-            aspect-ratio: 1;
-            object-fit: cover;
-            border-radius: 20px;
-            box-shadow: 0 0 45px #ff790044;
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+            font-size: 11px;
+            color: var(--gris);
         }
 
-        .close-player {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+        .progress-bar {
+            flex: 1;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-filled {
+            height: 100%;
+            background: linear-gradient(90deg, var(--naranja), var(--dorado));
+            width: 0%;
+            border-radius: 10px;
         }
 
         .message {
+            background: rgba(255, 121, 0, 0.15);
+            border: 1px solid rgba(255, 121, 0, 0.3);
             color: var(--dorado);
-            padding: 10px 0;
-            overflow-wrap: anywhere;
-        }
-
-        .hidden {
-            display: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .empty {
             color: var(--gris);
-            padding: 20px 0;
+            text-align: center;
+            padding: 40px 0;
         }
 
-        label {
-            color: var(--dorado);
-            font-size: 14px;
-        }
-
-        @media(max-width: 600px) {
-            .app {
-                padding: 13px;
-            }
-
-            .header {
-                align-items: stretch;
-            }
-
-            .search {
-                max-width: none;
-            }
-
-            .player-inner {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            .player-info {
-                width: 100%;
-            }
-
-            .player audio {
-                max-width: 100%;
-            }
-
-            .song-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
+        @media(max-width: 768px) {
+            .player-inner { grid-template-columns: 1fr; }
+            .player-center { order: -1; }
+            body { padding-bottom: 170px; }
         }
     </style>
 </head>
 
 <body>
 
-<div class="app" x-data="reproductorLPB()" x-init="iniciar()">
+<div class="app" x-data="reproductorLicenciado()" x-init="iniciar()">
 
     <!-- ENCABEZADO -->
     <header class="header">
-
         <div class="logo">
-            LPB <span>MUSIC</span> 🧡
+            LPB <span>MUSIC</span> 🧡 <small style="font-size: 12px; color: var(--dorado);">Pro</small>
         </div>
 
         <div class="search">
             <input
                 type="search"
-                x-model="busqueda"
-                placeholder="🔎 Buscar canciones o artistas..."
+                x-model="terminoBusqueda"
+                @input.debounce.500ms="buscarCanciones()"
+                placeholder="🔍 Busca artista, tema (ej: Reik, Romeo Santos)..."
             >
         </div>
-
-        <div>
-            <template x-if="usuario">
-                <button @click="cerrarSesion()">
-                    Cerrar sesión
-                </button>
-            </template>
-
-            <template x-if="!usuario">
-                <button @click="mostrarLogin = !mostrarLogin">
-                    Iniciar sesión
-                </button>
-            </template>
-        </div>
-
     </header>
 
     <!-- MENSAJES -->
-    <div class="message" x-show="mensaje" x-text="mensaje"></div>
+    <div class="message" x-show="mensaje" x-text="mensaje" x-transition></div>
 
-    <!-- INICIO DE SESIÓN -->
-    <section class="card section" x-show="mostrarLogin" x-transition>
-
-        <h2>🔐 Acceso a LPB Music</h2>
-
-        <form @submit.prevent="iniciarSesion(email, password)">
-
-            <label>Correo electrónico</label>
-            <input type="email" x-model="email" required>
-
-            <label>Contraseña</label>
-            <input type="password" x-model="password" required>
-
-            <button type="submit">Entrar</button>
-
-            <button type="button"
-                    @click="mostrarLogin = false">
-                Cancelar
-            </button>
-
-        </form>
-    </section>
-
-    <!-- PRESENTACIÓN -->
+    <!-- TENDENCIAS / BIBLIOTECA -->
     <section class="section">
-        <div class="card">
-            <h1 style="color:#ff7900">
-                Bienvenido a LPB Music 🧡
-            </h1>
-
-            <p style="color:#aaa">
-                Tu música, tus artistas y tus canciones favoritas
-                en un solo lugar.
-            </p>
-        </div>
-    </section>
-
-    <!-- CANCIÓN DESTACADA -->
-    <section class="section">
-
-        <h2>🎧 Reproduciendo ahora</h2>
-
-        <div class="card">
-
-            <img
-                class="album-cover"
-                style="width:130px"
-                :src="cancionActual.portada || portadaDefault"
-                alt="Portada"
-            >
-
-            <h2 x-text="cancionActual.titulo"></h2>
-
-            <h3 x-text="cancionActual.artista"></h3>
-
-            <p x-text="cancionActual.reseña"></p>
-
-            <button
-                @click="reproducir(cancionActual)"
-                :disabled="!cancionActual.audio"
-            >
-                ▶ Reproducir
-            </button>
-
-            <button
-                @click="reproductorAbierto = true"
-            >
-                ⛶ Pantalla completa
-            </button>
-
-        </div>
-
-    </section>
-
-    <!-- BIBLIOTECA -->
-    <section class="section">
-
-        <h2>🔥 Biblioteca musical</h2>
+        <h2 x-text="tituloSeccion">🔥 Éxitos del momento</h2>
 
         <div class="song-grid">
-
-            <template x-for="cancion in cancionesFiltradas()"
-                      :key="cancion.id || cancion.titulo">
-
-                <article
-                    class="song-card"
-                    @click="reproducir(cancion)"
-                >
-
-                    <img
-                        :src="cancion.portada || portadaDefault"
-                        alt="Portada de canción"
-                    >
-
+            <template x-for="cancion in listaCanciones" :key="cancion.id">
+                <article class="song-card" @click="reproducir(cancion)">
+                    <img :src="cancion.portada" alt="Portada">
                     <h3 x-text="cancion.titulo"></h3>
-
                     <p x-text="cancion.artista"></p>
-
                 </article>
-
             </template>
-
         </div>
 
-        <p class="empty"
-           x-show="cancionesFiltradas().length === 0">
-            No se encontraron canciones.
+        <p class="empty" x-show="listaCanciones.length === 0">
+            Cargando canciones licenciadas...
         </p>
-
     </section>
-
-    <!-- SUBIR CANCIONES -->
-    <section class="section" x-show="usuario">
-
-        <div class="card">
-
-            <h2>📤 Publicar una canción</h2>
-
-            <p style="color:#aaa">
-                Comparte tu música con la comunidad LPB Music.
-            </p>
-
-            <form @submit.prevent="subirCancionNube()">
-
-                <label>Título de la canción</label>
-                <input
-                    type="text"
-                    x-model="nuevoTitulo"
-                    placeholder="Nombre de la canción"
-                    required
-                >
-
-                <label>Nombre del artista</label>
-                <input
-                    type="text"
-                    x-model="nuevoArtista"
-                    placeholder="Nombre del artista"
-                    required
-                >
-
-                <label>Descripción o reseña</label>
-                <textarea
-                    x-model="nuevaReseña"
-                    placeholder="Escribe una descripción..."
-                    rows="3"
-                ></textarea>
-
-                <label>Archivo de audio</label>
-                <input
-                    type="file"
-                    x-ref="archivoAudio"
-                    accept="audio/*"
-                    required
-                >
-
-                <label>Portada (opcional)</label>
-                <input
-                    type="file"
-                    x-ref="archivoPortada"
-                    accept="image/*"
-                >
-
-                <button type="submit" :disabled="subiendo">
-                    <span x-show="!subiendo">🚀 Publicar canción</span>
-                    <span x-show="subiendo">Subiendo...</span>
-                </button>
-
-            </form>
-
-        </div>
-
-    </section>
-
-    <!-- REPRODUCTOR EXPANDIDO -->
-    <div
-        class="full-player"
-        x-show="reproductorAbierto"
-        x-transition
-        style="display:none"
-    >
-
-        <button class="close-player"
-                @click="reproductorAbierto = false">
-            ✕ Cerrar
-        </button>
-
-        <img
-            class="album-cover"
-            :src="cancionActual.portada || portadaDefault"
-            alt="Portada del álbum"
-        >
-
-        <h1 x-text="cancionActual.titulo"></h1>
-
-        <h2 x-text="cancionActual.artista"></h2>
-
-        <p style="color:#aaa">
-            Reproduciendo en LPB Music 🧡
-        </p>
-
-        <button @click="reproductorAbierto = false">
-            Volver a la biblioteca
-        </button>
-
-    </div>
 
     <!-- REPRODUCTOR INFERIOR -->
     <footer class="player">
-
         <div class="player-inner">
-
-            <div class="player-info">
-
-                <strong x-text="cancionActual.titulo"></strong>
-
-                <small x-text="cancionActual.artista"></small>
-
+            <div class="player-left">
+                <img :src="cancionActual.portada || 'https://placehold.co/500x500/242424/ff7900?text=LPB'" alt="Cover">
+                <div class="player-info">
+                    <strong x-text="cancionActual.titulo"></strong>
+                    <small x-text="cancionActual.artista"></small>
+                </div>
             </div>
 
-            <audio
-                x-ref="audioPlayer"
-                controls
-                preload="none"
-                @ended="reproductorAbierto = false"
-            ></audio>
-
+            <div class="player-center">
+                <div class="player-controls-btns">
+                    <button class="control-btn" @click="retroceder()">⏪</button>
+                    <button class="control-btn play-pause-btn" @click="togglePlayPause()">
+                        <span x-text="reproduciendo ? '⏸' : '▶'"></span>
+                    </button>
+                    <button class="control-btn" @click="adelantar()">⏩</button>
+                </div>
+                
+                <div class="progress-container">
+                    <span x-text="tiempoActualFormateado">0:00</span>
+                    <div class="progress-bar" @click="buscarPosicion($event)">
+                        <div class="progress-filled" :style="`width: ${progresoPorcentaje}%`"></div>
+                    </div>
+                    <span x-text="duracionTotalFormateada">0:30</span>
+                </div>
+            </div>
         </div>
-        
+
+        <audio
+            x-ref="audioPlayer"
+            @timeupdate="actualizarProgreso()"
+            @ended="reproduciendo = false"
+        ></audio>
+    </footer>
+
+</div>
+
 <script>
-const sb = window.supabase.createClient(
-    "wgemanyhzanuywidircm",
-    "sb_publishable_1zW1-B1bqE35cZ4eWND3tA_xKj0mJb-"
-);
-
-function reproductorLPB() {
-
+function reproductorLicenciado() {
     return {
-
-        // ESTADO GENERAL
-
-        busqueda: '',
+        terminoBusqueda: '',
         listaCanciones: [],
-        usuario: null,
+        tituloSeccion: '🔥 Éxitos licenciados (Deezer API)',
         mensaje: '',
-        email: '',
-        password: '',
-
-        mostrarLogin: false,
-        reproductorAbierto: false,
-        subiendo: false,
-
-        nuevoTitulo: '',
-        nuevoArtista: '',
-        nuevaReseña: '',
-
-        portadaDefault:
-            'https://placehold.co/500x500/242424/ff7900?text=LPB+MUSIC',
-
-        // CANCIÓN ACTUAL
+        reproduciendo: false,
+        
+        progresoPorcentaje: 0,
+        tiempoActualFormateado: '0:00',
+        duracionTotalFormateada: '0:30',
 
         cancionActual: {
-            id: null,
-            titulo: 'Bienvenido a LPB Music',
-            artista: 'Selecciona una canción',
-            reseña: 'Tu música comienza aquí.',
+            titulo: 'Selecciona un tema',
+            artista: 'LPB Music',
             audio: '',
-            portada: null
+            portada: ''
         },
-
-        // INICIAR APLICACIÓN
 
         async iniciar() {
-
-            const { data } = await sb.auth.getSession();
-
-            this.usuario = data.session?.user || null;
-
-            await this.cargarCanciones();
-
-            sb.auth.onAuthStateChange((event, session) => {
-
-                this.usuario = session?.user || null;
-
-            });
-
+            // Cargamos algunos hits por defecto al abrir la página (ej: pop latino / R&B / reggaeton)
+            await this.buscarEnDeezer('reik romaric reggaeton');
         },
 
-        // FILTRAR CANCIONES
-
-        cancionesFiltradas() {
-
-            const texto = this.busqueda.toLowerCase().trim();
-
-            if (!texto) {
-                return this.listaCanciones;
-            }
-
-            return this.listaCanciones.filter(cancion =>
-
-                cancion.titulo.toLowerCase().includes(texto) ||
-                cancion.artista.toLowerCase().includes(texto)
-
-            );
-
-        },
-
-        // INICIAR SESIÓN
-
-        async iniciarSesion(email, password) {
-
-            const { data, error } = await sb.auth.signInWithPassword({
-                email,
-                password
-            });
-
-            if (error) {
-
-                this.mensaje = 'Error al iniciar sesión: ' + error.message;
-
+        async buscarCanciones() {
+            if (!this.terminoBusqueda.trim()) {
+                this.tituloSeccion = '🔥 Éxitos del momento';
+                await this.buscarEnDeezer('top hits');
                 return;
             }
-
-            this.usuario = data.user;
-
-            this.mostrarLogin = false;
-
-            this.password = '';
-
-            this.mensaje = '¡Bienvenido a LPB Music! 🧡';
-
-            await this.cargarCanciones();
-
+            this.tituloSeccion = `🔍 Resultados para: "${this.terminoBusqueda}"`;
+            await this.buscarEnDeezer(this.terminoBusqueda);
         },
 
-        // CERRAR SESIÓN
+        async buscarEnDeezer(query) {
+            try {
+                // Usamos un proxy de CORS público para conectar la API de Deezer directamente desde el navegador de forma limpia
+                const url = `https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.deezer.com/search?q=${query}&limit=20`)}`;
+                const res = await fetch(url);
+                const data = await res.json();
 
-        async cerrarSesion() {
-
-            const { error } = await sb.auth.signOut();
-
-            if (error) {
-
-                this.mensaje = error.message;
-
-                return;
-            }
-
-            this.usuario = null;
-
-            this.mensaje = 'Sesión cerrada correctamente.';
-
-        },
-
-        // CARGAR CANCIONES DE SUPABASE
-
-        async cargarCanciones() {
-
-            const { data, error } = await sb
-                .from('songs')
-                .select('*')
-                .eq('status', 'published')
-                .order('created_at', { ascending: false });
-
-            if (error) {
-
-                this.mensaje = 'Error al cargar canciones: ' + error.message;
-
-                return;
-            }
-
-            this.listaCanciones = data.map(song => {
-
-                const { data: audio } = sb.storage
-                    .from('music')
-                    .getPublicUrl(song.audio_path);
-
-                let portada = null;
-
-                if (song.cover_path) {
-
-                    portada = sb.storage
-                        .from('music')
-                        .getPublicUrl(song.cover_path).data.publicUrl;
-
+                if (data && data.data) {
+                    this.listaCanciones = data.data.map(item => ({
+                        id: item.id,
+                        titulo: item.title,
+                        artista: item.artist.name,
+                        audio: item.preview, // URL oficial del MP3 de 30s licenciado
+                        portada: item.album.cover_medium || item.album.cover_big
+                    }));
                 }
-
-                return {
-
-                    id: song.id,
-                    titulo: song.title,
-                    artista: song.artist,
-                    reseña: song.description || '',
-                    audio: audio.publicUrl,
-                    portada: portada
-
-                };
-
-            });
-
-            // Mantener la canción seleccionada si sigue publicada
-
-            if (this.cancionActual.id) {
-
-                const actualizada = this.listaCanciones.find(
-                    song => song.id === this.cancionActual.id
-                );
-
-                if (actualizada) {
-                    this.cancionActual = actualizada;
-                }
-
+            } catch (err) {
+                console.error("Error cargando música:", err);
+                this.mensaje = 'No se pudo conectar con el catálogo de música.';
             }
-
         },
-
-        // REPRODUCIR CANCIÓN
 
         async reproducir(cancion) {
-
-            if (!cancion || !cancion.audio) {
-
-                this.mensaje = 'Esta canción no tiene audio disponible.';
-
+            if (!cancion.audio) {
+                this.mensaje = 'Este tema no cuenta con vista previa de audio.';
                 return;
             }
 
             this.cancionActual = cancion;
-
             const player = this.$refs.audioPlayer;
-
-            if (!player) return;
-
             player.src = cancion.audio;
-
             this.mensaje = '';
 
             try {
-
                 await player.play();
-
+                this.reproduciendo = true;
             } catch (error) {
-
-                this.mensaje = 'Pulsa reproducir en el reproductor para escuchar la canción.';
-
-                console.log(error);
-
+                this.mensaje = 'Presiona Play en el reproductor.';
+                this.reproduciendo = false;
             }
-
         },
 
-        
-        // SUBIR CANCIÓN A SUPABASE
+        togglePlayPause() {
+            const player = this.$refs.audioPlayer;
+            if (!player.src) return;
 
-        async subirCancionNube() {
-
-            if (!this.usuario) {
-
-                this.mensaje = 'Primero debes iniciar sesión.';
-
-                return;
+            if (player.paused) {
+                player.play();
+                this.reproduciendo = true;
+            } else {
+                player.pause();
+                this.reproduciendo = false;
             }
+        },
 
-            const archivo = this.$refs.archivoAudio.files[0];
+        retroceder() {
+            this.$refs.audioPlayer.currentTime = Math.max(0, this.$refs.audioPlayer.currentTime - 5);
+        },
 
-            const portadaArchivo = this.$refs.archivoPortada.files[0];
+        adelantar() {
+            this.$refs.audioPlayer.currentTime = Math.min(30, this.$refs.audioPlayer.currentTime + 5);
+        },
 
-            if (!archivo || !archivo.type.startsWith('audio/')) {
+        actualizarProgreso() {
+            const player = this.$refs.audioPlayer;
+            if (!player.duration) return;
+            this.progresoPorcentaje = (player.currentTime / player.duration) * 100;
+            this.tiempoActualFormateado = `0:${Math.floor(player.currentTime) < 10 ? '0' : ''}${Math.floor(player.currentTime)}`;
+        },
 
-                this.mensaje = 'Selecciona un archivo de audio válido.';
-
-                return;
-            }
-
-            if (!this.nuevoTitulo.trim() || !this.nuevoArtista.trim()) {
-
-                this.mensaje = 'Completa el título y el artista.';
-
-                return;
-            }
-
-            this.subiendo = true;
-
-            this.mensaje = 'Subiendo canción...';
-
-            let rutaAudio = null;
-            let rutaPortada = null;
-
-            try {
-
-                const carpeta = this.usuario.id;
-
-                const identificador = crypto.randomUUID();
-
-                const nombreAudio = archivo.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-
-                rutaAudio = `${carpeta}/${identificador}-${nombreAudio}`;
-
-                // SUBIR AUDIO
-
-                const { error: audioError } = await sb.storage
-                    .from('music')
-                    .upload(rutaAudio, archivo, {
-                        contentType: archivo.type,
-                        upsert: false
-                    });
-
-                if (audioError) {
-                    throw audioError;
-                }
-
-                // SUBIR PORTADA SI EXISTE
-
-                if (portadaArchivo) {
-
-                    if (!portadaArchivo.type.startsWith('image/')) {
-
-                        throw new Error('La portada debe ser una imagen válida.');
-
-                    }
-
-                    const nombrePortada = portadaArchivo.name.replace(
-                        /[^a-zA-Z0-9._-]/g,
-                        '_'
-                    );
-
-                    rutaPortada =
-                        `${carpeta}/${identificador}-${nombrePortada}`;
-
-                    const { error: portadaError } = await sb.storage
-                        .from('music')
-                        .upload(rutaPortada, portadaArchivo, {
-                            contentType: portadaArchivo.type,
-                            upsert: false
-                        });
-
-                    if (portadaError) {
-                        throw portadaError;
-                    }
-
-                }
-
-                // GUARDAR INFORMACIÓN EN LA BASE DE DATOS
-
-                const { error: insertError } = await sb
-                    .from('songs')
-                    .insert({
-
-                        user_id: this.usuario.id,
-
-                        title: this.nuevoTitulo.trim(),
-
-                        artist: this.nuevoArtista.trim(),
-
-                        description: this.nuevaReseña.trim(),
-
-                        audio_path: rutaAudio,
-
-                        cover_path: rutaPortada,
-
-                        status: 'published'
-
-                    });
-
-                if (insertError) {
-                    throw insertError;
-                }
-
-                // LIMPIAR FORMULARIO
-
-                this.nuevoTitulo = '';
-                this.nuevoArtista = '';
-                this.nuevaReseña = '';
-
-                this.$refs.archivoAudio.value = '';
-                this.$refs.archivoPortada.value = '';
-
-                // ACTUALIZAR BIBLIOTECA
-
-                await this.cargarCanciones();
-
-                this.mensaje = '¡Canción publicada correctamente! 🧡';
-
-            } catch (error) {
-
-                console.error('Error al publicar:', error);
-
-                this.mensaje = 'No se pudo publicar: ' + error.message;
-
-                // LIMPIAR ARCHIVOS SI FALLÓ EL REGISTRO
-
-                if (rutaAudio) {
-
-                    await sb.storage
-                        .from('music')
-                        .remove([rutaAudio]);
-
-                }
-
-                if (rutaPortada) {
-
-                    await sb.storage
-                        .from('music')
-                        .remove([rutaPortada]);
-
-                }
-
-            } finally {
-
-                this.subiendo = false;
-
-            }
-
+        buscarPosicion(event) {
+            const player = this.$refs.audioPlayer;
+            if (!player.duration) return;
+            const rect = event.currentTarget.getBoundingClientRect();
+            const porcentaje = (event.clientX - rect.left) / rect.width;
+            player.currentTime = porcentaje * player.duration;
         }
-
     };
-
 }
 </script>
 
-</body>
-</html>
-
-
-    </footer>
-</div>
 </body>
 </html>
