@@ -44,7 +44,7 @@
             background: linear-gradient(135deg, var(--naranja), var(--dorado));
             color: #fff;
             border: none;
-            padding: 11px 22px;
+            padding: 10px 20px;
             border-radius: 30px;
             cursor: pointer;
             font-weight: 700;
@@ -61,6 +61,21 @@
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--blanco);
+            border: 1px solid var(--borde);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
         }
 
         input, select {
@@ -80,7 +95,7 @@
             box-shadow: 0 0 15px var(--naranja-glow);
         }
 
-        /* HEADER Y BUSCADOR CENTRADO ARRIBA */
+        /* HEADER Y BUSCADOR */
         .header {
             display: flex;
             flex-direction: column;
@@ -95,13 +110,13 @@
         .top-bar {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 700px;
         }
 
         .logo {
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 900;
             letter-spacing: -1px;
             background: linear-gradient(135deg, var(--naranja), var(--dorado));
@@ -131,7 +146,7 @@
             color: var(--gris);
         }
 
-        /* PÍLDORAS DE GÉNEROS (ESTILO SOUNDCLOUD / APPLE MUSIC) */
+        /* GÉNEROS */
         .genre-pills {
             display: flex;
             gap: 10px;
@@ -400,6 +415,7 @@
 
         @media(max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; gap: 0; }
+            .top-bar { flex-direction: column; gap: 10px; }
             .player-inner { grid-template-columns: 1fr; }
             .player-center { order: -1; }
             body { padding-bottom: 185px; }
@@ -411,13 +427,31 @@
 
 <div x-data="reproductorComunidad()" x-init="iniciar()">
 
-    <!-- HEADER CON BUSCADOR CENTRADO Y BOTÓN DE APORTAR -->
+    <!-- HEADER -->
     <header class="header">
         <div class="top-bar">
             <span class="logo">LPB MUSIC 🧡</span>
-            <button class="btn-primary" @click="mostrarFormularioSubida = !mostrarFormularioSubida" style="padding: 8px 18px; font-size: 13px;">
-                <span x-text="mostrarFormularioSubida ? '✕ Cerrar panel' : '+ Aportar Canción'"></span>
-            </button>
+
+            <div>
+                <!-- Si NO está logueado: Muestra botón para iniciar sesión -->
+                <template x-if="!usuario">
+                    <button class="btn-secondary" @click="mostrarLogin = !mostrarLogin" style="font-size: 12px; padding: 7px 16px;">
+                        🔐 Iniciar Sesión (Artistas)
+                    </button>
+                </template>
+
+                <!-- Si SÍ está logueado: Muestra opción de subir tema y cerrar sesión -->
+                <template x-if="usuario">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="btn-primary" @click="mostrarFormularioSubida = !mostrarFormularioSubida" style="font-size: 12px; padding: 7px 16px;">
+                            <span x-text="mostrarFormularioSubida ? '✕ Cerrar panel' : '+ Subir Canción'"></span>
+                        </button>
+                        <button class="btn-secondary" @click="cerrarSesion()" style="font-size: 12px; padding: 7px 12px;">
+                            Salir
+                        </button>
+                    </div>
+                </template>
+            </div>
         </div>
 
         <!-- BUSCADOR RÁPIDO -->
@@ -426,11 +460,11 @@
             <input
                 type="search"
                 x-model="busqueda"
-                placeholder="Buscar por canción, artista o género..."
+                placeholder="Escucha cualquier tema, artista o género..."
             >
         </div>
 
-        <!-- FILTROS RÁPIDOS POR GÉNERO -->
+        <!-- FILTROS POR GÉNERO -->
         <div class="genre-pills">
             <template x-for="gen in generosDisponibles" :key="gen">
                 <button 
@@ -443,27 +477,47 @@
         </div>
     </header>
 
-    <!-- MENSAJES DE ESTADO -->
+    <!-- MENSAJES -->
     <div class="message" x-show="mensaje" x-text="mensaje" x-transition></div>
 
     <div class="app">
 
-        <!-- FORMULARIO COLABORATIVO PARA SUBIR CANCIONES (PC O CELULAR) -->
-        <section class="card" x-show="mostrarFormularioSubida" x-transition style="display: none;">
-            <h3 style="margin-top:0; color:var(--dorado)">📤 Compartir canción con el grupo</h3>
+        <!-- MODAL / FORMULARIO DE LOGIN (Solo visible si no está logueado y hace clic en iniciar sesión) -->
+        <section class="card" x-show="mostrarLogin && !usuario" x-transition style="display: none; max-width: 450px; margin: 0 auto 25px;">
+            <h3 style="margin-top:0; color:var(--dorado)">🔐 Acceso para Artistas</h3>
+            <p style="color: var(--gris); font-size: 13px; margin-bottom: 15px;">
+                Ingresa con tu cuenta para poder subir canciones a la plataforma.
+            </p>
+            <form @submit.prevent="iniciarSesion()">
+                <label style="font-size: 12px; color:var(--gris)">Correo electrónico</label>
+                <input type="email" x-model="emailInput" required placeholder="tu@correo.com">
+
+                <label style="font-size: 12px; color:var(--gris)">Contraseña</label>
+                <input type="password" x-model="passInput" required placeholder="••••••••">
+
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" class="btn-primary" style="flex: 1;">Entrar</button>
+                    <button type="button" class="btn-secondary" @click="mostrarLogin = false" style="flex: 1;">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- FORMULARIO PARA SUBIR CANCIONES (SOLO VISIBLE SI ESTÁ LOGUEADO) -->
+        <section class="card" x-show="usuario && mostrarFormularioSubida" x-transition style="display: none;">
+            <h3 style="margin-top:0; color:var(--dorado)">📤 Subir nueva canción</h3>
             <p style="color: var(--gris); font-size: 13px; margin-top: -8px; margin-bottom: 18px;">
-                Sube el tema desde tu celular o PC y aparecerá automáticamente en la biblioteca de todos.
+                Hola <strong x-text="usuario.email"></strong>. Sube tu tema y aparecerá en la biblioteca para que todos lo escuchen.
             </p>
 
-            <form @submit.prevent="subirCancionCompartida()">
+            <form @submit.prevent="subirCancion()">
                 <div class="form-grid">
                     <div>
-                        <label style="font-size: 12px; color:var(--gris)">Nombre de la canción *</label>
-                        <input type="text" x-model="nuevoTitulo" required placeholder="Ej. Noviembre Sin Ti">
+                        <label style="font-size: 12px; color:var(--gris)">Título de la canción *</label>
+                        <input type="text" x-model="nuevoTitulo" required placeholder="Ej. Bandido">
                     </div>
                     <div>
                         <label style="font-size: 12px; color:var(--gris)">Artista *</label>
-                        <input type="text" x-model="nuevoArtista" required placeholder="Ej. Reik">
+                        <input type="text" x-model="nuevoArtista" required placeholder="Ej. Tu Nombre / Ivo G">
                     </div>
                 </div>
 
@@ -485,21 +539,21 @@
                     </div>
                 </div>
 
-                <label style="font-size: 12px; color:var(--gris)">Archivo de Audio (.mp3, .wav, .m4a) *</label>
+                <label style="font-size: 12px; color:var(--gris)">Archivo de Audio (.mp3, .wav) *</label>
                 <input type="file" x-ref="archivoAudio" accept="audio/*" required>
 
                 <button type="submit" class="btn-primary" :disabled="subiendo" style="width: 100%; margin-top: 8px;">
-                    <span x-show="!subiendo">🚀 Publicar para todos</span>
-                    <span x-show="subiendo">Subiendo tema a la nube...</span>
+                    <span x-show="!subiendo">🚀 Publicar canción</span>
+                    <span x-show="subiendo">Subiendo a Supabase...</span>
                 </button>
             </form>
         </section>
 
-        <!-- BIBLIOTECA COMPARTIDA -->
+        <!-- BIBLIOTECA MUSICAL (VISIBLE PARA TODOS: LOGUEADOS Y NO LOGUEADOS) -->
         <section>
             <div class="section-header">
                 <h2>
-                    <span x-text="generoSeleccionado === 'Todos' ? '🔥 Toda la música compartida' : '🎧 Género: ' + generoSeleccionado"></span>
+                    <span x-text="generoSeleccionado === 'Todos' ? '🔥 Biblioteca Musical' : '🎧 Género: ' + generoSeleccionado"></span>
                 </h2>
                 <span style="color: var(--gris); font-size: 13px;" x-text="cancionesFiltradas().length + ' temas'"></span>
             </div>
@@ -516,13 +570,13 @@
             </div>
 
             <p style="text-align:center; color: var(--gris); padding: 40px 0;" x-show="cancionesFiltradas().length === 0">
-                Aún no hay canciones en esta categoría. ¡Sé el primero en subir una arriba!
+                No hay canciones disponibles en esta categoría.
             </p>
         </section>
 
     </div>
 
-    <!-- REPRODUCTOR INFERIOR -->
+    <!-- REPRODUCTOR INFERIOR (PARA TODOS) -->
     <footer class="player">
         <div class="player-inner">
             <div class="player-left">
@@ -575,31 +629,42 @@ function reproductorComunidad() {
         generoSeleccionado: 'Todos',
         generosDisponibles: ['Todos', 'Reggaetón', 'R&B / Romántico', 'Pop', 'Trap', 'Bachata / Latino', 'Otros'],
         
+        usuario: null,
+        mostrarLogin: false,
+        emailInput: '',
+        passInput: '',
+
         mostrarFormularioSubida: false,
         listaCanciones: [],
         mensaje: '',
         reproduciendo: false,
 
-        // Campos del formulario colaborativo
         nuevoTitulo: '',
         nuevoArtista: '',
         nuevoGenero: 'Reggaetón',
         subiendo: false,
 
-        // Estado reproductor
         progresoPorcentaje: 0,
         tiempoActualFormateado: '0:00',
         duracionTotalFormateada: '0:00',
 
         cancionActual: {
             titulo: 'Selecciona un tema',
-            artista: 'LPB Music Comunidad',
+            artista: 'LPB Music',
             genero: '',
             audio: '',
             portada: ''
         },
 
         async iniciar() {
+            // Verificar si hay sesión activa
+            const { data } = await sb.auth.getSession();
+            this.usuario = data.session?.user || null;
+
+            sb.auth.onAuthStateChange((event, session) => {
+                this.usuario = session?.user || null;
+            });
+
             await this.cargarCanciones();
         },
 
@@ -632,16 +697,12 @@ function reproductorComunidad() {
                 }
             } catch (e) {
                 console.error("Error cargando canciones:", e);
-                this.mensaje = 'Verifica que la tabla "songs" en Supabase tenga permisos de lectura pública.';
             }
         },
 
         cancionesFiltradas() {
             return this.listaCanciones.filter(c => {
-                // 1. Filtro por género
                 const coincideGenero = this.generoSeleccionado === 'Todos' || c.genero === this.generoSeleccionado;
-                
-                // 2. Filtro por texto en buscador
                 const texto = this.busqueda.toLowerCase().trim();
                 const coincideTexto = !texto || 
                     c.titulo.toLowerCase().includes(texto) || 
@@ -652,37 +713,62 @@ function reproductorComunidad() {
             });
         },
 
-        async subirCancionCompartida() {
+        async iniciarSesion() {
+            const { data, error } = await sb.auth.signInWithPassword({
+                email: this.emailInput,
+                password: this.passInput
+            });
+            if (error) {
+                this.mensaje = 'Error al iniciar sesión: ' + error.message;
+                return;
+            }
+            this.usuario = data.user;
+            this.mostrarLogin = false;
+            this.emailInput = '';
+            this.passInput = '';
+            this.mensaje = '¡Bienvenido artista! Ya puedes subir música.';
+        },
+
+        async cerrarSesion() {
+            await sb.auth.signOut();
+            this.usuario = null;
+            this.mostrarFormularioSubida = false;
+            this.mensaje = 'Sesión cerrada correctamente.';
+        },
+
+        async subirCancion() {
+            if (!this.usuario) {
+                this.mensaje = 'Debes iniciar sesión para subir canciones.';
+                return;
+            }
+
             const archivoAudio = this.$refs.archivoAudio.files[0];
             const archivoPortada = this.$refs.archivoPortada.files[0];
 
             if (!archivoAudio) {
-                this.mensaje = 'Debes seleccionar un archivo de audio.';
+                this.mensaje = 'Selecciona un archivo de audio.';
                 return;
             }
 
             this.subiendo = true;
-            this.mensaje = 'Subiendo canción para toda la comunidad...';
+            this.mensaje = 'Subiendo canción...';
 
             try {
+                const carpeta = this.usuario.id;
                 const idUnico = crypto.randomUUID();
-                const nombreLimpioAudio = archivoAudio.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                const rutaAudio = `comunidad/${idUnico}-${nombreLimpioAudio}`;
+                const rutaAudio = `${carpeta}/${idUnico}-${archivoAudio.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
 
-                // Subir archivo MP3 al bucket 'music'
                 const { error: errAudio } = await sb.storage.from('music').upload(rutaAudio, archivoAudio);
                 if (errAudio) throw errAudio;
 
-                // Subir portada si se eligió una
                 let rutaPortada = null;
                 if (archivoPortada) {
-                    const nombreLimpioPortada = archivoPortada.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                    rutaPortada = `comunidad/${idUnico}-${nombreLimpioPortada}`;
+                    rutaPortada = `${carpeta}/${idUnico}-${archivoPortada.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
                     await sb.storage.from('music').upload(rutaPortada, archivoPortada);
                 }
 
-                // Guardar en la tabla 'songs' para que les aparezca a todos
                 const { error: errDb } = await sb.from('songs').insert({
+                    user_id: this.usuario.id,
                     title: this.nuevoTitulo.trim(),
                     artist: this.nuevoArtista.trim(),
                     genre: this.nuevoGenero,
@@ -693,7 +779,6 @@ function reproductorComunidad() {
 
                 if (errDb) throw errDb;
 
-                // Limpiar formulario y actualizar pantalla
                 this.nuevoTitulo = '';
                 this.nuevoArtista = '';
                 this.$refs.archivoAudio.value = '';
@@ -701,10 +786,9 @@ function reproductorComunidad() {
                 this.mostrarFormularioSubida = false;
                 
                 await this.cargarCanciones();
-                this.mensaje = '¡Tema publicado! Ya lo pueden escuchar todos 🧡';
+                this.mensaje = '¡Canción publicada con éxito! 🚀';
 
             } catch (err) {
-                console.error(err);
                 this.mensaje = 'Error al subir: ' + err.message;
             } finally {
                 this.subiendo = false;
