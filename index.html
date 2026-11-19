@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#08080c">
     <title>LPB music 🧡</title>
-
     <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@700;800&display=swap" rel="stylesheet">
-
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         :root {
             --naranja: #ff6a00;
@@ -30,9 +27,7 @@
             --borde: rgba(255, 255, 255, 0.08);
             --borde-neon: rgba(255, 123, 0, 0.45);
         }
-
         * { box-sizing: border-box; }
-
         body {
             margin: 0;
             min-height: 100vh;
@@ -49,9 +44,7 @@
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             overflow-x: hidden;
         }
-
         button, input, select { font: inherit; }
-
         .btn-neon {
             background: linear-gradient(135deg, var(--naranja), var(--naranja-brillo), var(--ambar));
             background-size: 200% 200%;
@@ -69,13 +62,11 @@
             transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             box-shadow: 0 4px 20px var(--naranja-glow), inset 0 1px 1px rgba(255, 255, 255, 0.5);
         }
-
         .btn-neon:hover {
             transform: translateY(-2px);
             background-position: 100% 0;
             box-shadow: 0 8px 30px rgba(255, 106, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.7);
         }
-
         .btn-cyber {
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(12px);
@@ -92,7 +83,6 @@
             transition: all 0.25s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
-
         .btn-cyber:hover {
             background: var(--naranja-soft);
             border-color: var(--naranja-brillo);
@@ -100,7 +90,6 @@
             transform: translateY(-2px);
             box-shadow: 0 0 20px rgba(255, 106, 0, 0.28);
         }
-
         .btn-ghost {
             background: rgba(255, 255, 255, 0.05);
             color: var(--gris);
@@ -111,12 +100,10 @@
             font-weight: 600;
             transition: all 0.2s ease;
         }
-
         .btn-ghost:hover {
             background: rgba(255, 255, 255, 0.1);
             color: var(--blanco);
         }
-
         input, select {
             width: 100%;
             background: rgba(12, 12, 18, 0.9);
@@ -129,18 +116,15 @@
             margin-bottom: 16px;
             transition: all 0.25s ease;
         }
-
         input:focus, select:focus {
             border-color: var(--naranja-brillo);
             box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.18), 0 0 20px rgba(255, 106, 0, 0.2);
         }
-
         input[type="file"] {
             padding: 10px;
             font-size: 13px;
             color: var(--gris);
         }
-
         input[type="file"]::file-selector-button {
             background: var(--naranja-soft);
             color: var(--ambar);
@@ -152,7 +136,6 @@
             font-weight: 700;
             transition: 0.2s;
         }
-
         .header {
             display: flex;
             flex-direction: column;
@@ -162,7 +145,6 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-
         .top-bar {
             display: flex;
             align-items: center;
@@ -175,13 +157,11 @@
             border-radius: 20px;
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
         }
-
         .brand {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-
         .logo-icon {
             width: 34px;
             height: 34px;
@@ -193,7 +173,6 @@
             font-size: 18px;
             box-shadow: 0 0 16px var(--naranja-glow);
         }
-
         .logo {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 25px;
@@ -201,19 +180,16 @@
             letter-spacing: -0.5px;
             color: var(--blanco);
         }
-
         .logo span {
             background: linear-gradient(135deg, var(--naranja), var(--ambar));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .search-wrapper {
             width: 100%;
             max-width: 580px;
             position: relative;
         }
-
         .search-wrapper input {
             margin: 0;
             border-radius: 18px;
@@ -224,7 +200,6 @@
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
             font-size: 15px;
         }
-
         .search-icon {
             position: absolute;
             left: 18px;
@@ -233,7 +208,6 @@
             color: var(--naranja-brillo);
             font-size: 16px;
         }
-
         .clear-search {
             position: absolute;
             right: 16px;
@@ -251,7 +225,6 @@
             align-items: center;
             justify-content: center;
         }
-
         .genre-pills {
             display: flex;
             gap: 10px;
@@ -261,7 +234,6 @@
             scrollbar-width: none;
         }
         .genre-pills::-webkit-scrollbar { display: none; }
-
         .pill {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--borde);
@@ -274,13 +246,11 @@
             white-space: nowrap;
             transition: all 0.25s ease;
         }
-
         .pill:hover {
             background: var(--naranja-soft);
             color: var(--blanco);
             border-color: var(--borde-neon);
         }
-
         .pill.active {
             background: linear-gradient(135deg, var(--naranja), var(--ambar));
             color: #08080c;
@@ -288,13 +258,11 @@
             border-color: transparent;
             box-shadow: 0 0 18px var(--naranja-glow);
         }
-
         .app {
             max-width: 1160px;
             margin: auto;
             padding: 10px 24px;
         }
-
         .glass-panel {
             background: var(--panel);
             backdrop-filter: blur(24px);
@@ -306,7 +274,6 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             position: relative;
         }
-
         .glass-panel::before {
             content: "";
             position: absolute;
@@ -314,13 +281,11 @@
             height: 2px;
             background: linear-gradient(90deg, transparent, var(--naranja), var(--ambar), transparent);
         }
-
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 16px;
         }
-
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -329,14 +294,12 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-
         .section-header h2 {
             margin: 0;
             font-family: 'Space Grotesk', sans-serif;
             font-size: 22px;
             font-weight: 800;
         }
-
         .counter-badge {
             background: var(--naranja-soft);
             border: 1px solid var(--borde-neon);
@@ -346,13 +309,11 @@
             font-size: 12px;
             font-weight: 700;
         }
-
         .song-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
             gap: 22px;
         }
-
         .song-card {
             background: rgba(18, 18, 26, 0.78);
             backdrop-filter: blur(16px);
@@ -363,19 +324,16 @@
             transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
         }
-
         .song-card:hover {
             border-color: var(--borde-neon);
             transform: translateY(-8px);
             background: rgba(26, 26, 38, 0.92);
             box-shadow: 0 18px 38px rgba(0, 0, 0, 0.7), 0 0 24px rgba(255, 106, 0, 0.22);
         }
-
         .song-card.playing-card {
             border-color: var(--naranja-brillo);
             box-shadow: 0 0 28px rgba(255, 106, 0, 0.3);
         }
-
         .cover-container {
             position: relative;
             width: 100%;
@@ -385,18 +343,15 @@
             margin-bottom: 14px;
             background: #14141d;
         }
-
         .cover-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
-
         .song-card:hover .cover-container img {
             transform: scale(1.06);
         }
-
         .play-overlay {
             position: absolute;
             inset: 0;
@@ -407,12 +362,10 @@
             opacity: 0;
             transition: opacity 0.25s ease;
         }
-
         .song-card:hover .play-overlay,
         .song-card.playing-card .play-overlay {
             opacity: 1;
         }
-
         .play-circle-hover {
             width: 50px;
             height: 50px;
@@ -428,11 +381,9 @@
             transform: scale(0.9);
             transition: transform 0.25s ease;
         }
-
         .song-card:hover .play-circle-hover {
             transform: scale(1);
         }
-
         .genre-tag {
             position: absolute;
             top: 10px;
@@ -449,7 +400,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .song-card h3 {
             margin: 0 0 4px;
             font-size: 15px;
@@ -458,7 +408,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .song-card p {
             margin: 0;
             color: var(--gris);
@@ -467,7 +416,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         /* MENÚ DE 3 PUNTITOS */
         .card-footer-row {
             display: flex;
@@ -477,13 +425,11 @@
             min-height: 28px;
             position: relative;
         }
-
         .card-status-mini {
             font-size: 11px;
             font-weight: 700;
             color: var(--ambar);
         }
-
         .dots-btn {
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid var(--borde);
@@ -500,13 +446,11 @@
             margin-left: auto;
             transition: 0.2s;
         }
-
         .dots-btn:hover {
             background: var(--naranja-soft);
             border-color: var(--naranja-brillo);
             color: var(--ambar);
         }
-
         .dots-menu {
             position: absolute;
             bottom: 34px;
@@ -522,7 +466,6 @@
             flex-direction: column;
             gap: 2px;
         }
-
         .dots-menu button {
             background: transparent;
             border: none;
@@ -535,18 +478,15 @@
             cursor: pointer;
             transition: 0.15s;
         }
-
         .dots-menu button:hover {
             background: var(--naranja-soft);
             color: var(--ambar);
         }
-
         .library-tabs {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
         }
-
         /* REPRODUCTOR EXPANDIDO (ESTILO SPOTIFY) */
         .full-player-modal {
             position: fixed;
@@ -560,7 +500,6 @@
             padding: 28px 24px 36px;
             overflow-y: auto;
         }
-
         .full-player-backdrop {
             position: absolute;
             inset: 0;
@@ -571,14 +510,12 @@
             z-index: -2;
             transition: background-image 0.5s ease;
         }
-
         .full-player-gradient {
             position: absolute;
             inset: 0;
             background: radial-gradient(circle at 50% 30%, rgba(255, 106, 0, 0.22), rgba(8, 8, 12, 0.92) 75%);
             z-index: -1;
         }
-
         .full-player-top {
             width: 100%;
             max-width: 720px;
@@ -586,7 +523,6 @@
             align-items: center;
             justify-content: space-between;
         }
-
         .full-player-center {
             display: flex;
             flex-direction: column;
@@ -596,7 +532,6 @@
             max-width: 480px;
             margin: auto 0;
         }
-
         .big-cover-wrapper {
             position: relative;
             width: min(74vw, 330px);
@@ -608,12 +543,10 @@
             margin-bottom: 28px;
             transition: transform 0.4s ease;
         }
-
         .big-cover-wrapper.is-playing {
             transform: scale(1.03);
             box-shadow: 0 30px 75px rgba(0, 0, 0, 0.85), 0 0 60px rgba(255, 106, 0, 0.55);
         }
-
         .big-cover-wrapper img {
             width: 100%;
             height: 100%;
@@ -621,7 +554,6 @@
             border-radius: 24px;
             display: block;
         }
-
         .big-title {
             font-family: 'Space Grotesk', sans-serif;
             font-size: clamp(24px, 4vw, 32px);
@@ -630,19 +562,16 @@
             color: var(--blanco);
             letter-spacing: -0.5px;
         }
-
         .big-artist {
             font-size: 16px;
             font-weight: 600;
             color: var(--ambar);
             margin: 0 0 24px;
         }
-
         .big-progress-area {
             width: 100%;
             margin-bottom: 24px;
         }
-
         .big-progress-bar {
             width: 100%;
             height: 8px;
@@ -653,14 +582,12 @@
             overflow: hidden;
             margin-bottom: 10px;
         }
-
         .big-progress-filled {
             height: 100%;
             background: linear-gradient(90deg, var(--naranja), var(--ambar));
             border-radius: 99px;
             box-shadow: 0 0 14px var(--naranja);
         }
-
         .big-times {
             display: flex;
             justify-content: space-between;
@@ -668,14 +595,12 @@
             font-weight: 700;
             color: var(--gris);
         }
-
         .big-controls {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 28px;
         }
-
         .big-play-btn {
             width: 72px;
             height: 72px;
@@ -692,12 +617,10 @@
             box-shadow: 0 0 35px var(--naranja-glow);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
         .big-play-btn:hover {
             transform: scale(1.08);
             box-shadow: 0 0 50px rgba(255, 106, 0, 0.75);
         }
-
         .big-skip-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.12);
@@ -712,14 +635,12 @@
             justify-content: center;
             transition: 0.2s;
         }
-
         .big-skip-btn:hover {
             background: var(--naranja-soft);
             border-color: var(--naranja-brillo);
             color: var(--ambar);
             transform: scale(1.1);
         }
-
         /* REPRODUCTOR INFERIOR */
         .player-dock {
             position: fixed;
@@ -737,14 +658,12 @@
             padding: 12px 22px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 106, 0, 0.16);
         }
-
         .player-inner {
             display: grid;
             grid-template-columns: 280px 1fr 160px;
             align-items: center;
             gap: 20px;
         }
-
         .player-left {
             display: flex;
             align-items: center;
@@ -752,7 +671,6 @@
             min-width: 0;
             cursor: pointer;
         }
-
         .player-left img {
             width: 52px;
             height: 52px;
@@ -760,7 +678,6 @@
             object-fit: cover;
             border: 1px solid rgba(255, 123, 0, 0.4);
         }
-
         .player-info strong {
             display: block;
             font-size: 14px;
@@ -769,7 +686,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .player-info small {
             color: var(--ambar);
             font-size: 12px;
@@ -778,7 +694,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
         .player-center {
             display: flex;
             flex-direction: column;
@@ -786,13 +701,11 @@
             gap: 6px;
             width: 100%;
         }
-
         .player-controls-btns {
             display: flex;
             align-items: center;
             gap: 18px;
         }
-
         .control-btn {
             background: transparent;
             border: none;
@@ -802,12 +715,10 @@
             padding: 6px;
             transition: 0.2s;
         }
-
         .control-btn:hover {
             color: var(--naranja-brillo);
             transform: scale(1.15);
         }
-
         .play-pause-btn {
             background: linear-gradient(135deg, var(--naranja), var(--ambar));
             color: #08080c;
@@ -820,7 +731,6 @@
             font-weight: 900;
             box-shadow: 0 0 18px var(--naranja-glow);
         }
-
         .progress-container {
             display: flex;
             align-items: center;
@@ -831,7 +741,6 @@
             font-weight: 600;
             color: var(--gris);
         }
-
         .progress-bar {
             flex: 1;
             height: 5px;
@@ -841,21 +750,18 @@
             position: relative;
             overflow: hidden;
         }
-
         .progress-filled {
             height: 100%;
             background: linear-gradient(90deg, var(--naranja), var(--ambar));
             width: 0%;
             border-radius: 99px;
         }
-
         .player-right {
             display: flex;
             align-items: center;
             justify-content: flex-end;
             gap: 10px;
         }
-
         .toast-message {
             background: rgba(255, 106, 0, 0.16);
             backdrop-filter: blur(12px);
@@ -869,7 +775,6 @@
             text-align: center;
             max-width: 600px;
         }
-
         @media(max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; gap: 0; }
             .top-bar { flex-direction: column; gap: 12px; }
@@ -939,8 +844,25 @@
     <!-- NOTIFICACIÓN / ESTADO -->
     <div class="toast-message" x-show="mensaje" x-text="mensaje" x-transition></div>
     <div class="app">
+        <!-- PANEL PARA CAMBIAR CONTRASEÑA (AL ENTRAR DESDE RESET PASSWORD) -->
+        <section class="glass-panel" x-show="mostrarResetPassword" x-transition style="display: none; max-width: 460px; margin: 0 auto 30px;">
+            <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif; color:var(--ambar); font-size: 21px;">🔑 Nueva Contraseña</h3>
+            <p style="color: var(--gris); font-size: 13px; margin-bottom: 18px;">Ingresa tu nueva contraseña para tu cuenta de LPB music.</p>
+            <form @submit.prevent="guardarNuevaPassword()">
+                <label style="font-size: 11px; font-weight: 800; color:var(--gris); letter-spacing: 0.5px;">NUEVA CONTRASEÑA (mínimo 6 caracteres)</label>
+                <input type="password" x-model="nuevaPassInput" required minlength="6" placeholder="••••••••">
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="submit" class="btn-neon" :disabled="guardandoPass" style="flex: 1;">
+                        <span x-show="!guardandoPass">Guardar Contraseña</span>
+                        <span x-show="guardandoPass">Guardando...</span>
+                    </button>
+                    <button type="button" class="btn-ghost" @click="mostrarResetPassword = false" style="flex: 1;">Cancelar</button>
+                </div>
+            </form>
+        </section>
+
         <!-- PANEL DE LOGIN / CREAR CUENTA CON VINCULACIÓN AUTOMÁTICA -->
-        <section class="glass-panel" x-show="mostrarLogin && !usuario" x-transition style="display: none; max-width: 460px; margin: 0 auto 30px;">
+        <section class="glass-panel" x-show="mostrarLogin && !usuario && !mostrarResetPassword" x-transition style="display: none; max-width: 460px; margin: 0 auto 30px;">
             <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif; color:var(--ambar); font-size: 21px;" x-text="modoRegistro ? '⚡ Crear Cuenta en LPB music' : '🔐 Iniciar Sesión'"></h3>
             <p style="color: var(--gris); font-size: 13px; margin-bottom: 18px;" x-text="modoRegistro ? 'Crea tu cuenta para entrar directo, guardar tu música y vincular tus datos.' : 'Accede con tu cuenta para continuar guardando música.'"></p>
             
@@ -1025,7 +947,6 @@
                 </div>
                 <span class="counter-badge" x-text="cancionesMostradas().length + ' canciones'"></span>
             </div>
-
             <!-- BARRA DE PLAYLISTS -->
             <div class="glass-panel" x-show="vistaBiblioteca === 'playlists'" style="display: none; padding: 16px 20px; margin-bottom: 20px;">
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
@@ -1042,7 +963,6 @@
                     <button class="btn-neon" @click="crearPlaylist()" style="padding: 8px 14px; font-size: 12px;">+ Nueva playlist</button>
                 </div>
             </div>
-
             <div class="song-grid">
                 <template x-for="cancion in cancionesMostradas()" :key="cancion.id">
                     <article 
@@ -1062,13 +982,10 @@
                         </div>
                         <h3 x-text="cancion.titulo"></h3>
                         <p x-text="cancion.artista"></p>
-
                         <div class="card-footer-row" @click.stop>
                             <span class="card-status-mini" x-show="colaReproduccion.some(q => q.id === cancion.id)">⚡ En cola</span>
                             <span class="card-status-mini" x-show="!colaReproduccion.some(q => q.id === cancion.id) && esFavorita(cancion.id)">🧡 Fav</span>
-
                             <button class="dots-btn" @click.stop="menuAbiertoId = menuAbiertoId === cancion.id ? null : cancion.id" title="Opciones">⋮</button>
-
                             <div class="dots-menu" x-show="menuAbiertoId === cancion.id" style="display: none;">
                                 <button @click="toggleFavorito(cancion); menuAbiertoId = null;">
                                     <span x-text="esFavorita(cancion.id) ? '💔 Quitar de favoritos' : '🧡 Agregar a favoritos'"></span>
@@ -1090,13 +1007,11 @@
             </div>
         </section>
     </div>
-
     <!-- MODAL ELEGIR PLAYLIST -->
     <div x-show="modalPlaylistAbierto" @click="modalPlaylistAbierto = false" style="position: fixed; inset: 0; background: rgba(0,0,0,0.78); z-index: 400; display: none; align-items: center; justify-content: center; padding: 20px;">
         <div class="glass-panel" @click.stop style="max-width: 380px; width: 100%; margin: 0;">
             <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif; color:var(--ambar); font-size: 18px;">📂 Agregar a playlist</h3>
             <p style="color: var(--gris); font-size: 13px; margin-top: 4px;" x-text="cancionParaPlaylist?.titulo"></p>
-
             <div style="display: flex; flex-direction: column; gap: 8px; margin: 14px 0;">
                 <template x-for="pl in playlists" :key="pl.id">
                     <button class="btn-cyber" @click="agregarAPlaylist(pl.id)" style="justify-content: space-between; width: 100%;">
@@ -1105,14 +1020,12 @@
                     </button>
                 </template>
             </div>
-
             <div style="display: flex; gap: 8px;">
                 <button class="btn-neon" @click="crearPlaylist(true)" style="flex: 1; padding: 9px 12px; font-size: 12px;">+ Nueva</button>
                 <button class="btn-ghost" @click="modalPlaylistAbierto = false" style="flex: 1; padding: 9px 12px; font-size: 12px;">Cerrar</button>
             </div>
         </div>
     </div>
-
     <!-- REPRODUCTOR EN GRANDE (PANTALLA COMPLETA) -->
     <div 
         class="full-player-modal" 
@@ -1219,14 +1132,16 @@ function reproductorComunidad() {
         usuario: null,
         mostrarLogin: false,
         modoRegistro: false,
+        mostrarResetPassword: false,
         emailInput: '',
         passInput: '',
+        nuevaPassInput: '',
+        guardandoPass: false,
         mostrarFormularioSubida: false,
         reproductorGrande: false,
         listaCanciones: [],
         mensaje: '',
         reproduciendo: false,
-
         vistaBiblioteca: 'todo',
         favoritosIds: [],
         playlists: [
@@ -1237,7 +1152,6 @@ function reproductorComunidad() {
         menuAbiertoId: null,
         modalPlaylistAbierto: false,
         cancionParaPlaylist: null,
-
         nuevoTitulo: '',
         nuevoArtista: '',
         nuevoGenero: 'Reggaetón',
@@ -1254,20 +1168,50 @@ function reproductorComunidad() {
             portada: ''
         },
         async iniciar() {
+            if (window.location.hash.includes('type=recovery')) {
+                this.mostrarResetPassword = true;
+                this.mostrarLogin = false;
+            }
+
             // Verificar si hay sesión activa guardada
             const { data } = await sb.auth.getSession();
             this.usuario = data.session?.user || null;
+
             sb.auth.onAuthStateChange((event, session) => {
                 this.usuario = session?.user || null;
+                if (event === 'PASSWORD_RECOVERY') {
+                    this.mostrarResetPassword = true;
+                    this.mostrarLogin = false;
+                    this.mensaje = 'Escribe tu nueva contraseña para completar la recuperación.';
+                }
             });
+
             this.cargarBibliotecaLocal();
             await this.cargarCanciones();
+        },
+        async guardarNuevaPassword() {
+            if (!this.nuevaPassInput || this.nuevaPassInput.length < 6) {
+                this.mensaje = 'La contraseña debe tener al menos 6 caracteres.';
+                return;
+            }
+            this.guardandoPass = true;
+            try {
+                const { error } = await sb.auth.updateUser({ password: this.nuevaPassInput });
+                if (error) throw error;
+                this.nuevaPassInput = '';
+                this.mostrarResetPassword = false;
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+                this.mensaje = '¡Contraseña actualizada correctamente! Ya puedes usar tu cuenta 🧡';
+            } catch (err) {
+                this.mensaje = 'Error al cambiar contraseña: ' + err.message;
+            } finally {
+                this.guardandoPass = false;
+            }
         },
         cargarBibliotecaLocal() {
             try {
                 const favs = JSON.parse(localStorage.getItem('lpb_favs') || '[]');
                 if (Array.isArray(favs)) this.favoritosIds = favs;
-
                 const pls = JSON.parse(localStorage.getItem('lpb_playlists') || 'null');
                 if (Array.isArray(pls) && pls.length > 0) {
                     this.playlists = pls;
