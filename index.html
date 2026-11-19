@@ -62,10 +62,14 @@
             transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             box-shadow: 0 4px 20px var(--naranja-glow), inset 0 1px 1px rgba(255, 255, 255, 0.5);
         }
-        .btn-neon:hover {
+        .btn-neon:hover:not(:disabled) {
             transform: translateY(-2px);
             background-position: 100% 0;
             box-shadow: 0 8px 30px rgba(255, 106, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+        }
+        .btn-neon:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
         }
         .btn-cyber {
             background: rgba(255, 255, 255, 0.04);
@@ -808,9 +812,12 @@
                 </template>
                 <!-- Si SÍ está logueado -->
                 <template x-if="usuario">
-                    <div style="display: flex; gap: 10px; align-items: center;">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;">
                         <button class="btn-neon" @click="mostrarFormularioSubida = !mostrarFormularioSubida" style="font-size: 13px;">
                             <span x-text="mostrarFormularioSubida ? '✕ Cerrar Panel' : '+ Insertar Música'"></span>
+                        </button>
+                        <button class="btn-cyber" @click="mostrarResetPassword = !mostrarResetPassword" style="font-size: 12px;">
+                            🔑 Cambiar Clave
                         </button>
                         <button class="btn-ghost" @click="cerrarSesion()" style="font-size: 12px;">
                             Salir
@@ -844,16 +851,20 @@
     <!-- NOTIFICACIÓN / ESTADO -->
     <div class="toast-message" x-show="mensaje" x-text="mensaje" x-transition></div>
     <div class="app">
-        <!-- PANEL PARA CAMBIAR CONTRASEÑA (AL ENTRAR DESDE RESET PASSWORD) -->
+        <!-- PANEL PARA CAMBIAR CONTRASEÑA (CON LÍMITE POR TIEMPO) -->
         <section class="glass-panel" x-show="mostrarResetPassword" x-transition style="display: none; max-width: 460px; margin: 0 auto 30px;">
             <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif; color:var(--ambar); font-size: 21px;">🔑 Nueva Contraseña</h3>
             <p style="color: var(--gris); font-size: 13px; margin-bottom: 18px;">Ingresa tu nueva contraseña para tu cuenta de LPB music.</p>
             <form @submit.prevent="guardarNuevaPassword()">
                 <label style="font-size: 11px; font-weight: 800; color:var(--gris); letter-spacing: 0.5px;">NUEVA CONTRASEÑA (mínimo 6 caracteres)</label>
                 <input type="password" x-model="nuevaPassInput" required minlength="6" placeholder="••••••••">
+                <p x-show="segundosRestantesCambio > 0" style="color: var(--ambar); font-size: 12px; font-weight: 700; margin: -6px 0 12px;">
+                    ⏳ Espera <span x-text="segundosRestantesCambio"></span>s para volver a cambiar la contraseña.
+                </p>
                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="submit" class="btn-neon" :disabled="guardandoPass" style="flex: 1;">
-                        <span x-show="!guardandoPass">Guardar Contraseña</span>
+                    <button type="submit" class="btn-neon" :disabled="guardandoPass || segundosRestantesCambio > 0" style="flex: 1;">
+                        <span x-show="!guardandoPass && segundosRestantesCambio === 0">Guardar Contraseña</span>
+                        <span x-show="segundosRestantesCambio > 0">Espera <span x-text="segundosRestantesCambio"></span>s</span>
                         <span x-show="guardandoPass">Guardando...</span>
                     </button>
                     <button type="button" class="btn-ghost" @click="mostrarResetPassword = false" style="flex: 1;">Cancelar</button>
@@ -878,7 +889,12 @@
             </form>
             <div style="text-align: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--borde); font-size: 13px; color: var(--gris);">
                 <template x-if="!modoRegistro">
-                    <p style="margin:0;">¿No tienes cuenta? <a href="#" @click.prevent="modoRegistro = true" style="color: var(--ambar); font-weight: 800; text-decoration: none;">Créala aquí</a></p>
+                    <div>
+                        <p style="margin:0;">¿No tienes cuenta? <a href="#" @click.prevent="modoRegistro = true" style="color: var(--ambar); font-weight: 800; text-decoration: none;">Créala aquí</a></p>
+                        <p style="margin: 8px 0 0; font-size: 12px;">
+                            <a href="#" @click.prevent="enviarRecuperacion()" style="color: var(--gris); text-decoration: underline;">¿Olvidaste tu contraseña?</a>
+                        </p>
+                    </div>
                 </template>
                 <template x-if="modoRegistro">
                     <p style="margin:0;">¿Ya tienes una cuenta? <a href="#" @click.prevent="modoRegistro = false" style="color: var(--ambar); font-weight: 800; text-decoration: none;">Inicia sesión</a></p>
@@ -1137,6 +1153,9 @@ function reproductorComunidad() {
         passInput: '',
         nuevaPassInput: '',
         guardandoPass: false,
+        cooldownCambioSegundos: 60,
+        segundosRestantesCambio: 0,
+        temporizadorCambioInterval: null,
         mostrarFormularioSubida: false,
         reproductorGrande: false,
         listaCanciones: [],
@@ -1180,6 +1199,11 @@ function reproductorComunidad() {
                 history.replaceState(null, '', window.location.pathname + window.location.search);
             }
 
+            this.actualizarContadorCambio();
+            this.temporizadorCambioInterval = setInterval(() => {
+                this.actualizarContadorCambio();
+            }, 1000);
+
             // Verificar si hay sesión activa guardada
             const { data } = await sb.auth.getSession();
             this.usuario = data.session?.user || null;
@@ -1196,7 +1220,22 @@ function reproductorComunidad() {
             this.cargarBibliotecaLocal();
             await this.cargarCanciones();
         },
+        actualizarContadorCambio() {
+            const ultimo = Number(localStorage.getItem('lpb_last_pass_change') || '0');
+            if (!ultimo) {
+                this.segundosRestantesCambio = 0;
+                return;
+            }
+            const transcurrido = Math.floor((Date.now() - ultimo) / 1000);
+            const restante = this.cooldownCambioSegundos - transcurrido;
+            this.segundosRestantesCambio = restante > 0 ? restante : 0;
+        },
         async guardarNuevaPassword() {
+            this.actualizarContadorCambio();
+            if (this.segundosRestantesCambio > 0) {
+                this.mensaje = `⏳ Cambiaste la contraseña hace poco. Espera ${this.segundosRestantesCambio}s para volver a intentarlo.`;
+                return;
+            }
             if (!this.nuevaPassInput || this.nuevaPassInput.length < 6) {
                 this.mensaje = 'La contraseña debe tener al menos 6 caracteres.';
                 return;
@@ -1205,6 +1244,8 @@ function reproductorComunidad() {
             try {
                 const { error } = await sb.auth.updateUser({ password: this.nuevaPassInput });
                 if (error) throw error;
+                localStorage.setItem('lpb_last_pass_change', String(Date.now()));
+                this.actualizarContadorCambio();
                 this.nuevaPassInput = '';
                 this.mostrarResetPassword = false;
                 history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -1214,6 +1255,16 @@ function reproductorComunidad() {
             } finally {
                 this.guardandoPass = false;
             }
+        },
+        async enviarRecuperacion() {
+            const correo = this.emailInput.trim() || prompt('Ingresa el correo de tu cuenta:');
+            if (!correo) return;
+            const { error } = await sb.auth.resetPasswordForEmail(correo, {
+                redirectTo: window.location.origin + '/'
+            });
+            this.mensaje = error
+                ? 'Error al enviar correo: ' + error.message
+                : '📩 Te enviamos un enlace a ' + correo + '. Ábrelo una sola vez en este navegador.';
         },
         cargarBibliotecaLocal() {
             try {
