@@ -533,7 +533,7 @@
             align-items: center;
             text-align: center;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
             margin: auto 0;
         }
         .big-cover-wrapper {
@@ -603,7 +603,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 28px;
+            gap: 14px;
+            flex-wrap: wrap;
         }
         .big-play-btn {
             width: 72px;
@@ -629,21 +630,24 @@
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: var(--blanco);
-            width: 50px;
+            min-width: 52px;
             height: 50px;
-            border-radius: 50%;
-            font-size: 18px;
+            padding: 0 12px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 800;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 4px;
             transition: 0.2s;
         }
         .big-skip-btn:hover {
             background: var(--naranja-soft);
             border-color: var(--naranja-brillo);
             color: var(--ambar);
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
         /* REPRODUCTOR INFERIOR */
         .player-dock {
@@ -708,32 +712,48 @@
         .player-controls-btns {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
         .control-btn {
-            background: transparent;
-            border: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--blanco);
-            font-size: 16px;
+            font-size: 12px;
+            font-weight: 700;
             cursor: pointer;
-            padding: 6px;
+            padding: 6px 10px;
+            border-radius: 10px;
             transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
         }
         .control-btn:hover {
             color: var(--naranja-brillo);
-            transform: scale(1.15);
+            border-color: var(--borde-neon);
+            background: var(--naranja-soft);
+            transform: scale(1.08);
         }
         .play-pause-btn {
             background: linear-gradient(135deg, var(--naranja), var(--ambar));
             color: #08080c;
+            border: none;
             width: 42px;
             height: 42px;
+            padding: 0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 16px;
             font-weight: 900;
             box-shadow: 0 0 18px var(--naranja-glow);
+        }
+        .play-pause-btn:hover {
+            color: #08080c;
+            background: linear-gradient(135deg, var(--naranja), var(--ambar));
         }
         .progress-container {
             display: flex;
@@ -871,7 +891,6 @@
                 </div>
             </form>
         </section>
-
         <!-- PANEL DE LOGIN / CREAR CUENTA CON VINCULACIÓN AUTOMÁTICA -->
         <section class="glass-panel" x-show="mostrarLogin && !usuario && !mostrarResetPassword" x-transition style="display: none; max-width: 460px; margin: 0 auto 30px;">
             <h3 style="margin-top:0; font-family: 'Space Grotesk', sans-serif; color:var(--ambar); font-size: 21px;" x-text="modoRegistro ? '⚡ Crear Cuenta en LPB music' : '🔐 Iniciar Sesión'"></h3>
@@ -928,6 +947,7 @@
                             <option value="Trap">Trap</option>
                             <option value="Bachata / Latino">Bachata / Latino</option>
                             <option value="RKT">RKT</option>
+                            <option value="Rock">Rock</option>
                             <option value="Otros">Otros</option>
                         </select>
                     </div>
@@ -1079,11 +1099,13 @@
                 </div>
             </div>
             <div class="big-controls">
-                <button class="big-skip-btn" @click="retroceder()" title="Retroceder 10s">⏪</button>
+                <button class="big-skip-btn" @click="cancionAnterior()" title="Canción anterior">⏮</button>
+                <button class="big-skip-btn" @click="retroceder()" title="Retroceder 10 segundos">⏪ -10s</button>
                 <button class="big-play-btn" @click="togglePlayPause()">
                     <span x-text="reproduciendo ? '⏸' : '▶'"></span>
                 </button>
-                <button class="big-skip-btn" @click="siguienteCancion()" title="Siguiente canción">⏩</button>
+                <button class="big-skip-btn" @click="adelantar()" title="Adelantar 10 segundos">+10s ⏩</button>
+                <button class="big-skip-btn" @click="siguienteCancion()" title="Siguiente canción">⏭</button>
             </div>
         </div>
         <div style="height: 10px;"></div>
@@ -1100,11 +1122,13 @@
             </div>
             <div class="player-center">
                 <div class="player-controls-btns">
-                    <button class="control-btn" @click="retroceder()">⏪</button>
+                    <button class="control-btn" @click="cancionAnterior()" title="Canción anterior">⏮</button>
+                    <button class="control-btn" @click="retroceder()" title="Retroceder 10 segundos">⏪ -10s</button>
                     <button class="control-btn play-pause-btn" @click="togglePlayPause()">
                         <span x-text="reproduciendo ? '⏸' : '▶'"></span>
                     </button>
-                    <button class="control-btn" @click="siguienteCancion()" title="Siguiente canción">⏩</button>
+                    <button class="control-btn" @click="adelantar()" title="Adelantar 10 segundos">+10s ⏩</button>
+                    <button class="control-btn" @click="siguienteCancion()" title="Siguiente canción">⏭</button>
                 </div>
                 
                 <div class="progress-container">
@@ -1143,7 +1167,7 @@ function reproductorComunidad() {
     return {
         busqueda: '',
         generoSeleccionado: 'Todos',
-        generosDisponibles: ['Todos', 'Reggaetón', 'Rock', 'Trap', 'Bachata / Latino', 'RKT', 'Otros'],
+        generosDisponibles: ['Todos', 'Reggaetón', 'R&B / Romántico', 'Pop', 'Trap', 'Bachata / Latino', 'RKT', 'Rock', 'Otros'],
         
         usuario: null,
         mostrarLogin: false,
@@ -1191,23 +1215,19 @@ function reproductorComunidad() {
                 this.mostrarResetPassword = true;
                 this.mostrarLogin = false;
             }
-
             const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
             const errorDesc = hashParams.get('error_description');
             if (errorDesc) {
                 this.mensaje = 'Enlace de recuperación no válido o vencido: ' + decodeURIComponent(errorDesc.replace(/\+/g, ' '));
                 history.replaceState(null, '', window.location.pathname + window.location.search);
             }
-
             this.actualizarContadorCambio();
             this.temporizadorCambioInterval = setInterval(() => {
                 this.actualizarContadorCambio();
             }, 1000);
-
             // Verificar si hay sesión activa guardada
             const { data } = await sb.auth.getSession();
             this.usuario = data.session?.user || null;
-
             sb.auth.onAuthStateChange((event, session) => {
                 this.usuario = session?.user || null;
                 if (event === 'PASSWORD_RECOVERY') {
@@ -1216,7 +1236,6 @@ function reproductorComunidad() {
                     this.mensaje = 'Escribe tu nueva contraseña para completar la recuperación.';
                 }
             });
-
             this.cargarBibliotecaLocal();
             await this.cargarCanciones();
         },
@@ -1509,6 +1528,13 @@ function reproductorComunidad() {
                 this.reproduciendo = false;
             }
         },
+        async cancionAnterior() {
+            const lista = this.cancionesMostradas().length > 0 ? this.cancionesMostradas() : this.cancionesFiltradas();
+            if (lista.length === 0) return;
+            const idx = lista.findIndex(c => c.id === this.cancionActual.id);
+            const anteriorIdx = idx > 0 ? idx - 1 : lista.length - 1;
+            await this.reproducirYExpandir(lista[anteriorIdx]);
+        },
         async siguienteCancion() {
             if (this.colaReproduccion.length > 0) {
                 const siguienteEnCola = this.colaReproduccion.shift();
@@ -1537,11 +1563,17 @@ function reproductorComunidad() {
         },
         retroceder() {
             const player = this.$refs.audioPlayer;
-            if (player.duration) player.currentTime = Math.max(0, player.currentTime - 10);
+            if (player.duration) {
+                player.currentTime = Math.max(0, player.currentTime - 10);
+                this.actualizarProgreso();
+            }
         },
         adelantar() {
             const player = this.$refs.audioPlayer;
-            if (player.duration) player.currentTime = Math.min(player.duration, player.currentTime + 10);
+            if (player.duration) {
+                player.currentTime = Math.min(player.duration, player.currentTime + 10);
+                this.actualizarProgreso();
+            }
         },
         actualizarProgreso() {
             const player = this.$refs.audioPlayer;
