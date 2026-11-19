@@ -1173,6 +1173,13 @@ function reproductorComunidad() {
                 this.mostrarLogin = false;
             }
 
+            const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+            const errorDesc = hashParams.get('error_description');
+            if (errorDesc) {
+                this.mensaje = 'Enlace de recuperación no válido o vencido: ' + decodeURIComponent(errorDesc.replace(/\+/g, ' '));
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+
             // Verificar si hay sesión activa guardada
             const { data } = await sb.auth.getSession();
             this.usuario = data.session?.user || null;
